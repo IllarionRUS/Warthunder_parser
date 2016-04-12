@@ -30,12 +30,14 @@ namespace WarThunderParser.core
                     m_DataSize = Math.Min(m_DataSize, list.Count);
 
                 foreach (var name in recorder.Names)
-                    try {
-                        m_Data.Add(name, approximated[Array.IndexOf(recorder.Names, name)]);
-                    } catch (Exception) {
-                        // TODO
-                    }
+                {
+                    if (m_Data.ContainsKey(name))
+                        continue;                    
+                    m_Data.Add(name, approximated[Array.IndexOf(recorder.Names, name)]);                    
+                }
             }
+
+
 
             foreach (var keyValue in m_Data)
             {
