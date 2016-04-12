@@ -1,0 +1,111 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:zg="clr-namespace:ZedGraph;assembly=ZedGraph"
+        xmlns:local="clr-namespace:WarThunderParser"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="WarThunderParser.MainWindow"
+        Title="Сбор параметров" Width="1024" Height="768" Background="Lavender" Icon="_png (1).ico" Closed="Window_Closed" Closing="Window_Closing" >
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type local:Graph}" x:Key="GraphItemTemplate">
+            <TextBox  IsReadOnly="True" Padding="3" IsReadOnlyCaretVisible="False" BorderThickness="0" Text="{Binding Path=GraphName, Mode=TwoWay}" 
+                      Background="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}, Path=Background}" MouseDoubleClick="GraphListItemsDoubleClick"
+                      LostFocus="GraphListItemsLostFocus" GotFocus ="GraphListGotFocus"></TextBox>
+        </DataTemplate>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"></BooleanToVisibilityConverter>
+    </Window.Resources>
+    <TabControl Background="Lavender" SelectionChanged="TabControl_SelectionChanged">
+        <TabItem Header="Сбор данных">
+            <Grid Background="White" >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <ToolBar Background="Lavender"  Grid.Row="0">
+                    <Button Content="Start"   Width="75" Click="StartButton_Click" />
+                    <Button Content="Stop"   Width="75" Click="StopButton_Click"/>
+                    <Button Content="To Excel"  Width="75" Margin="5" Padding="3" Click="Button_Click"/>
+                    <Button Content="Футы в метры"  Margin="5" Padding="3" Tag="true" Click="Button_Click_8"/>
+                    <Button Content="Метры в футы"  Margin="5" Padding="3" Tag ="false" Click="Button_Click_8"/>
+                    <Button Content="Помощь"  Margin="5" Padding="3" Click="Button_Click_7"/>
+                    <Button Content="Настройки"  Margin="5" Padding="3" Click="Button_Click_10" />
+                </ToolBar>
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Left">
+                    <StackPanel Name="TableStackPanel" Visibility="Hidden">
+                        <Expander Header="Выбрать параметры для отображения в таблице">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal"/>
+                                <WrapPanel x:Name="CheckBoxPanel"/>
+                            </StackPanel>
+                        </Expander>
+                        <Expander Header="Показать таблицу">
+                            <DataGrid x:Name="DataGrid1" IsReadOnly="True" AllowDrop="False" MinHeight="10" HorizontalAlignment="Left" ItemsSource="{Binding DoubleCollection.Collection}" AutoGenerateColumns="False"  MouseDown="DataGrid1_MouseDown"/>
+                        </Expander>
+                    </StackPanel>
+                </ScrollViewer>
+                <StatusBar Grid.Row="2">
+                    <Label Name="StatusLabelMain">Нажмите Start или F9 для начала сбора данных.</Label>
+                    <Label Name="StatusLabelSecond"></Label>
+                </StatusBar>
+            </Grid>
+        </TabItem>
+        <TabItem Name="GraphTabItem"  Header="Графики" Height="20" VerticalAlignment="Top"  >
+            <Grid>
+                <Grid.Resources>
+                    <Style BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" TargetType="Button"></Style>
+                </Grid.Resources>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Left" Background="Lavender">
+                    <Button Content="Настройки" Margin="3" VerticalAlignment="Top" Click="Button_Click_9" />
+                    <Button Content="Сохранить" Margin="3" VerticalAlignment="Top" Click="Button_Click_3"  />
+                    <Button Content="Открыть" Margin="3" VerticalAlignment="Top" Click="Button_Click_5"    />
+                    <Button Content="Добавить в список" Margin="3" VerticalAlignment="Top" Click="Button_Click_4"  />
+                    <Border/>
+                    <Label VerticalAlignment="Center" Visibility="Collapsed" Content="CompareList:" />
+                    <Border>
+                        <Expander VerticalAlignment="Top" Header="Список графиков" Name ="GraphListExpander">
+                            <StackPanel Orientation="Horizontal" Visibility="{Binding ElementName=GraphListBox, Path=HasItems, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <ListBox x:Name="GraphListBox" SelectionMode="Multiple" ItemTemplate="{StaticResource GraphItemTemplate}" />
+                                <Button Content="Удалить" Padding="3" MinWidth="80" Click="Button_Click_2" VerticalAlignment="Top"></Button>
+                            </StackPanel>
+                        </Expander>
+                    </Border>
+
+                </StackPanel>
+
+                <WindowsFormsHost Grid.Row="1" x:Name ="WinHost" Margin="207,0,0,0" >
+                    <zg:ZedGraphControl Name="graphControl" Dock="Fill" IsShowPointValues="True"/>
+                </WindowsFormsHost>
+                <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="207,0,0,0">
+                    <StackPanel.Resources>
+                        <Style BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" TargetType="Button"></Style>
+                    </StackPanel.Resources>
+                    <WrapPanel x:Name="GraphPanel" />
+
+                    <CheckBox Name="AxisShowCheckBox" Content="Убрать подписи осей" Margin="5" VerticalAlignment="Center" Click="AxisShowCheckBox_Click"></CheckBox>
+                    <CheckBox x:Name="LegendShowCheckBox" Content="Убрать легенду" Margin="5" VerticalAlignment="Center" Click="LegendShowCheckBox_Click" />
+
+                </StackPanel>
+                <ComboBox x:Name="cb_Abscissa" HorizontalAlignment="Left" Margin="0,5,0,0" Grid.Row="1" VerticalAlignment="Top" Width="202"
+                          SelectionChanged="cb_Abscissa_SelectionChanged"
+                          />
+                <ListBox x:Name="lb_Measures" HorizontalAlignment="Left" Height="635" Margin="0,48,0,0" Grid.Row="1" VerticalAlignment="Top" Width="202" Grid.RowSpan="2"
+                         ItemsSource="{Binding Ordinats}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding IsChecked}" Content="{Binding Item}"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <Label x:Name="label" Content="Ось ординат:" HorizontalAlignment="Left" Margin="0,25,0,0" Grid.Row="1" VerticalAlignment="Top"/>
+            </Grid>
+        </TabItem>
+        <TabItem Header="Измерения">
+
+        </TabItem>
+    </TabControl>
+</Window>

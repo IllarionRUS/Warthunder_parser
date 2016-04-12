@@ -1,0 +1,46 @@
+﻿<Window x:Class="WarThunderParser.GraphSetupWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local ="clr-namespace:WarThunderParser"
+        xmlns:drawing ="clr-namespace:System.Drawing;assembly=System.Drawing"
+        Title="Настройки графиков" SizeToContent="WidthAndHeight"  Background="Lavender" Closing="Window_Closing">
+    <Window.Resources>
+    </Window.Resources>
+    <Grid>
+        <Grid.Resources>
+            <Style BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" TargetType="Button"></Style>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <GroupBox Header="Сглаживание" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left">
+            <StackPanel>
+                <CheckBox x:Name ="SmoothGraphCheckBox" IsChecked="True" Content="Использовать" VerticalAlignment="Center" Margin="5"  />
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="Размер выборки, пиксели:" VerticalAlignment="Center"></Label>
+                    <TextBox Width="70" Text="10" Name="SmoothPeriodBox"  VerticalAlignment="Center" Margin="5" Height="24" LostFocus="SmoothPeriodBox_LostFocus"/>
+                </StackPanel>
+                <ComboBox Name="SmoothTypeComboBox" VerticalAlignment="Center" HorizontalAlignment="Left"></ComboBox>
+            </StackPanel>
+        </GroupBox>
+        <GroupBox Visibility="Collapsed" Header ="Линии" Grid.Row="0" Grid.Column="0" Grid.RowSpan="3">
+            <ListBox MinWidth="150" Name ="LinesListBox" ></ListBox>
+        </GroupBox>
+        <GroupBox Header="Сетка" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left">
+            <StackPanel>
+                <CheckBox Name="MainGridCheckBox" Content ="Включить основную" Margin="5"></CheckBox>
+                <CheckBox Name="AdditionalGridCheckBox" Content ="Включить дополнительную" Margin="5"></CheckBox>
+            </StackPanel>
+        </GroupBox>
+        <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Right">
+            <Button Content="Отмена"  VerticalAlignment="Bottom" Margin="10" Click="Button_Click_1"></Button>
+            <Button Content="Применить"  VerticalAlignment="Bottom" Margin="10" Click="Button_Click"></Button>
+        </StackPanel>
+    </Grid>
+</Window>
