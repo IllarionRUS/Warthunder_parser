@@ -89,10 +89,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="AskGraphNameWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="CollectSettings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -115,13 +111,11 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="AskGraphNameWindow.xaml.cs">
-      <DependentUpon>AskGraphNameWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="CollectSettings.xaml.cs">
       <DependentUpon>CollectSettings.xaml</DependentUpon>
     </Compile>
     <Compile Include="controls\CheckedListItem.cs" />
+    <Compile Include="core\DataProcessingHelper.UI.cs" />
     <Compile Include="core\FdrManager.cs" />
     <Compile Include="core\FdrDataAdapter.cs" />
     <Compile Include="core\FlightDataRecorder.cs" />
@@ -158,7 +152,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Compile Include="core\DataProcessingHelper.Core.cs" />
+    <Compile Include="core\DataProcessingHelper.Data.cs" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

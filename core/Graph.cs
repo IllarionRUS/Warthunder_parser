@@ -57,13 +57,19 @@ namespace WarThunderParser
         public override bool Equals(object obj)
         {
             var graph2 = obj as Graph;
-            if (graph2 == null) return false;
+            if (graph2 == null)
+                return false;
             for (int i = 0; i < graph2.PointPairs.Count; i++)
             {
                 if ((graph2.PointPairs[i].X != PointPairs[i].X) || (graph2.PointPairs[i].Y != PointPairs[i].Y))
                     return false;
             }
             return true;
+        }
+
+        public override int GetHashCode()
+        {
+            return PointPairs.GetHashCode();
         }
 
         public Graph(PointPairList points, string curveName, string xAxis, string yAxis)
@@ -99,6 +105,7 @@ namespace WarThunderParser
         }
     }
     public enum SmoothModel{Average, Median}
+
     public class GraphSettings : ICloneable
     {
         private const int MinSmoothPeriod = 0;
@@ -118,12 +125,20 @@ namespace WarThunderParser
                 _smoothPeriod = value;
             }
         }
+        public bool LegendVisible { get; set; }
+        public bool AxisLabelVisible { get; set; }
+        public int AxisFontSize { get; set; }
+        public bool AxisColorAsCurve { get; set; }
 
-    
         public List<CurveLine> CurveLines;
         
         public GraphSettings()
         {
+            LegendVisible = true;
+            AxisLabelVisible = true;
+            AxisFontSize = 10;
+            AxisColorAsCurve = false;
+
             CurveLines = new List<CurveLine>
             {
                 new CurveLine(2.0f, Color.Blue, SymbolType.None),
@@ -146,7 +161,11 @@ namespace WarThunderParser
                 MinorGrid = this.MinorGrid,
                 Smooth = this.Smooth,
                 SmoothPeriod = this.SmoothPeriod,
-                SmoothType = this.SmoothType
+                SmoothType = this.SmoothType,
+                LegendVisible = this.LegendVisible,
+                AxisLabelVisible = this.AxisLabelVisible,
+                AxisFontSize = this.AxisFontSize,
+                AxisColorAsCurve = this.AxisColorAsCurve
             };
             return resultSettings;
         }

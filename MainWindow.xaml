@@ -8,13 +8,13 @@
     <Window.Resources>
         <DataTemplate DataType="{x:Type local:Graph}" x:Key="GraphItemTemplate">
             <TextBox  IsReadOnly="True" Padding="3" IsReadOnlyCaretVisible="False" BorderThickness="0" Text="{Binding Path=GraphName, Mode=TwoWay}" 
-                      Background="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}, Path=Background}" MouseDoubleClick="GraphListItemsDoubleClick"
-                      LostFocus="GraphListItemsLostFocus" GotFocus ="GraphListGotFocus"></TextBox>
+                      Background="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}, Path=Background}"
+                      ></TextBox>
         </DataTemplate>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"></BooleanToVisibilityConverter>
     </Window.Resources>
-    <TabControl Background="Lavender" SelectionChanged="TabControl_SelectionChanged">
-        <TabItem Header="Сбор данных">
+    <TabControl Background="Lavender">
+        <TabItem x:Name="Tab_Main" Header="Сбор данных">
             <Grid Background="White" >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"></RowDefinition>
@@ -22,13 +22,11 @@
                     <RowDefinition Height="Auto"></RowDefinition>
                 </Grid.RowDefinitions>
                 <ToolBar Background="Lavender"  Grid.Row="0">
-                    <Button Content="Start"   Width="75" Click="StartButton_Click" />
-                    <Button Content="Stop"   Width="75" Click="StopButton_Click"/>
-                    <Button Content="To Excel"  Width="75" Margin="5" Padding="3" Click="Button_Click"/>
-                    <Button Content="Футы в метры"  Margin="5" Padding="3" Tag="true" Click="Button_Click_8"/>
-                    <Button Content="Метры в футы"  Margin="5" Padding="3" Tag ="false" Click="Button_Click_8"/>
-                    <Button Content="Помощь"  Margin="5" Padding="3" Click="Button_Click_7"/>
-                    <Button Content="Настройки"  Margin="5" Padding="3" Click="Button_Click_10" />
+                    <Button x:Name="btn_Start" Content="Start"   Width="75" Click="StartButton_Click" />
+                    <Button x:Name="btn_Stop" Content="Stop"   Width="75" Click="StopButton_Click"/>
+                    <Button x:Name="btn_Excel" Content="To Excel"  Width="75" Margin="5" Padding="3" Click="btn_Excel_Click"/>
+                    <Button x:Name="btn_Help" Content="Помощь"  Margin="5" Padding="3" Click="btn_Help_Click"/>
+                    <Button x:Name="btn_Preferences" Content="Настройки"  Margin="5" Padding="3" Click="btn_Preferences_Click" RenderTransformOrigin="-7.527,0.441" />
                 </ToolBar>
                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Left">
                     <StackPanel Name="TableStackPanel" Visibility="Hidden">
@@ -49,7 +47,7 @@
                 </StatusBar>
             </Grid>
         </TabItem>
-        <TabItem Name="GraphTabItem"  Header="Графики" Height="20" VerticalAlignment="Top"  >
+        <TabItem x:Name="Tab_Graph"  Header="Графики" Height="20" VerticalAlignment="Top"  >
             <Grid>
                 <Grid.Resources>
                     <Style BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" TargetType="Button"></Style>
@@ -60,20 +58,12 @@
                     <RowDefinition Height="Auto"></RowDefinition>
                 </Grid.RowDefinitions>
                 <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Left" Background="Lavender">
-                    <Button Content="Настройки" Margin="3" VerticalAlignment="Top" Click="Button_Click_9" />
-                    <Button Content="Сохранить" Margin="3" VerticalAlignment="Top" Click="Button_Click_3"  />
-                    <Button Content="Открыть" Margin="3" VerticalAlignment="Top" Click="Button_Click_5"    />
-                    <Button Content="Добавить в список" Margin="3" VerticalAlignment="Top" Click="Button_Click_4"  />
+                    <Button x:Name="btn_Graph_Prefs" Content="Настройки" Margin="3,0,3,3" VerticalAlignment="Bottom" Click="btn_Graph_Prefs_Click" />
+                    <Button x:Name="btn_Graph_Save" Content="Сохранить" Margin="3" VerticalAlignment="Top" Click="btn_Graph_Save_Click"  />
+                    <Button x:Name="btn_Graph_Open" Content="Открыть" Margin="3" VerticalAlignment="Top" Click="btn_Graph_Open_Click"    />
                     <Border/>
                     <Label VerticalAlignment="Center" Visibility="Collapsed" Content="CompareList:" />
-                    <Border>
-                        <Expander VerticalAlignment="Top" Header="Список графиков" Name ="GraphListExpander">
-                            <StackPanel Orientation="Horizontal" Visibility="{Binding ElementName=GraphListBox, Path=HasItems, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                <ListBox x:Name="GraphListBox" SelectionMode="Multiple" ItemTemplate="{StaticResource GraphItemTemplate}" />
-                                <Button Content="Удалить" Padding="3" MinWidth="80" Click="Button_Click_2" VerticalAlignment="Top"></Button>
-                            </StackPanel>
-                        </Expander>
-                    </Border>
+                    <Border/>
 
                 </StackPanel>
 
@@ -85,10 +75,6 @@
                         <Style BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" TargetType="Button"></Style>
                     </StackPanel.Resources>
                     <WrapPanel x:Name="GraphPanel" />
-
-                    <CheckBox Name="AxisShowCheckBox" Content="Убрать подписи осей" Margin="5" VerticalAlignment="Center" Click="AxisShowCheckBox_Click"></CheckBox>
-                    <CheckBox x:Name="LegendShowCheckBox" Content="Убрать легенду" Margin="5" VerticalAlignment="Center" Click="LegendShowCheckBox_Click" />
-
                 </StackPanel>
                 <ComboBox x:Name="cb_Abscissa" HorizontalAlignment="Left" Margin="0,5,0,0" Grid.Row="1" VerticalAlignment="Top" Width="202"
                           SelectionChanged="cb_Abscissa_SelectionChanged"
@@ -104,7 +90,7 @@
                 <Label x:Name="label" Content="Ось ординат:" HorizontalAlignment="Left" Margin="0,25,0,0" Grid.Row="1" VerticalAlignment="Top"/>
             </Grid>
         </TabItem>
-        <TabItem Header="Измерения">
+        <TabItem x:Name="Tab_Measures" Header="Измерения">
 
         </TabItem>
     </TabControl>
