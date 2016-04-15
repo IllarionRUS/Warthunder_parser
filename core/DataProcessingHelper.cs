@@ -8,8 +8,16 @@ using ZedGraph;
 
 namespace WarThunderParser.Core
 {
+    // TODO grid; filters; translates;
     public partial class DataProcessingHelper
     {
+        public struct ResultDataUI
+        {
+            public DataGrid DataGrid { get; set; }
+
+        }
+
+        public List<Graph> Graphs { get; private set; }
         public FdrManager RecordersManager { get; private set; }
         public ZedGraphControl GraphControl { get; set; }
         public GraphSettings GraphSettings
@@ -27,12 +35,15 @@ namespace WarThunderParser.Core
             set
             {
                 m_CollectSettings = value;
+                if (m_Data != null && m_Data.Count > 0)
+                {
+                    CollectData();
+                }
                 Redraw();
             }
-        }
-        
-        private string m_Abs;
-        private List<Graph> m_Graphs;
+        }        
+
+        private string m_Abs;        
 
         private GraphSettings m_GraphSettings;
         private CollectSettings m_CollectSettings;
@@ -41,7 +52,9 @@ namespace WarThunderParser.Core
         {
             RecordersManager = mngr;
 
-            m_Graphs = new List<Graph>();
+            Graphs = new List<Graph>();
+            m_MetricalConverter = new MetricalConverter(this, Consts.Unit.Metrical);
+            m_ImperialConverter = new ImperialConverter(this, Consts.Unit.Imperial);
 
             RecordersManager.OnDataCollected += onDataCollected;
             RecordersManager.OnStartDataCollecting += onStartDataCollecting;
@@ -57,14 +70,14 @@ namespace WarThunderParser.Core
             if (string.IsNullOrWhiteSpace(x))
             {
                 var points = new PointPairList(new double[m_DataSize], m_Data[y].ToArray());
-                Graph graph = new Graph(points, y + "(" + x + ")", x, y);
-                m_Graphs.Add(graph);
+                Graph graph = new Graph(points, y + "(" + x + ")", x, y, null, m_Units[y]);
+                Graphs.Add(graph);
             }
             else if (m_Data.ContainsKey(x) && m_Data.ContainsKey(y))
             {
                 var points = new PointPairList(m_Data[x].ToArray(), m_Data[y].ToArray());
-                Graph graph = new Graph(points, y + "(" + x + ")", x, y);
-                m_Graphs.Add(graph);              
+                Graph graph = new Graph(points, y + "(" + x + ")", x, y, m_Units[x], m_Units[y]);
+                Graphs.Add(graph);              
             }
         }
 
@@ -72,11 +85,11 @@ namespace WarThunderParser.Core
         public void SetAbscissa(string abscissa)
         {
             m_Abs = abscissa;
-            var currentOrdinates = m_Graphs.Select(t => t.YAxis).ToArray();
-            m_Graphs.Clear();
+            var currentOrdinates = Graphs.Select(t => t.YAxis).ToArray();
+            Graphs.Clear();
             foreach (var ordinate in currentOrdinates)
                 BuildGraph(m_Abs, ordinate);
-            if (m_Graphs.Count > 0)
+            if (Graphs.Count > 0)
                 Redraw();
         }
 
@@ -90,16 +103,16 @@ namespace WarThunderParser.Core
 
         public void RemoveOrdinate(string ordinate)
         {
-            m_Graphs.RemoveAll(graph => graph.YAxis.Equals(ordinate));
+            Graphs.RemoveAll(graph => graph.YAxis.Equals(ordinate));
             Redraw();
         }
         
-        private void Clear()
+        public void Clear()
         {
             m_DataSize = 0;
             m_Data.Clear();
             m_Units.Clear();
-            m_Graphs.Clear();
+            Graphs.Clear();
 
             if (GraphControl != null)
             {
@@ -113,9 +126,7 @@ namespace WarThunderParser.Core
                     if (pane.YAxis != null)
                         pane.YAxis.Title.Text = "";
                 }
-            }
-            
-            
+            }       
         }
 
         #region recorders manager events
@@ -126,6 +137,7 @@ namespace WarThunderParser.Core
 
         private void onDataCollected(FdrManagerEventArgs args)
         {
+            m_SynchTime = null;
             Clear();
             CollectData();
         }       

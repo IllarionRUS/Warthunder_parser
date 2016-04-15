@@ -11,6 +11,8 @@ namespace WarThunderParser
     {
         public PointPairList PointPairs { get; set; }
         public string CurveName { get; set; }
+        public string X_Unit { get; set; }
+        public string Y_Unit { get; set; }
         private string _graphName;
         public string GraphName
         {
@@ -29,7 +31,6 @@ namespace WarThunderParser
         public string YAxis { get;  set; }
         readonly Random _rnd = new Random();
         
-
         public LineItem GetLineItem(System.Drawing.Color color, SymbolType symbolType, float lineWidth)
         {
             var result = new LineItem(GraphName, PointPairs, color, symbolType);
@@ -72,22 +73,24 @@ namespace WarThunderParser
             return PointPairs.GetHashCode();
         }
 
-        public Graph(PointPairList points, string curveName, string xAxis, string yAxis)
+        public Graph(PointPairList points, string curveName, string xAxis, string yAxis, string x_unit = null, string y_unit = null)
         {
             XAxis = xAxis;
             YAxis = yAxis;
+            X_Unit = x_unit;
+            Y_Unit = y_unit;
             PointPairs = points;
             CurveName = curveName;
         }
-        public Graph(PointPairList points, string curveName, string graphName, string xAxis, string yAxis)
-            : this(points, curveName, xAxis, yAxis)
+        public Graph(PointPairList points, string curveName, string graphName, string xAxis, string yAxis, string x_unit = null, string y_unit = null)
+            : this(points, curveName, xAxis, yAxis, x_unit, y_unit)
         {
             GraphName = graphName;
         }
 
         public object Clone()
         {
-            return new Graph(PointPairs, CurveName,_graphName, XAxis, YAxis);
+            return new Graph(PointPairs, CurveName,_graphName, XAxis, YAxis, X_Unit, Y_Unit);
         }
     }
 

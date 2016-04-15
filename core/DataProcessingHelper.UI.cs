@@ -9,23 +9,23 @@ namespace WarThunderParser.Core
 
     public partial class DataProcessingHelper
     {        
-        private void Redraw()
+        public void Redraw()
         {
             if (GraphControl == null)
                 return;
             GraphControl.GraphPane.CurveList.Clear();
             GraphPane pane = GraphControl.GraphPane;
             pane.YAxisList.Clear();
-            if (m_Graphs.Count == 0)
+            if (Graphs.Count == 0)
             {
                 pane.XAxis.Title.Text = "";
                 return;
             }
 
             var yAxises = new Dictionary<string, int>();
-            for (int k = 0; k < m_Graphs.Count; k++)
+            for (int k = 0; k < Graphs.Count; k++)
             {
-                Graph graph = m_Graphs[k];
+                Graph graph = Graphs[k];
                 LineItem line = k < GraphSettings.CurveLines.Count
                     ? graph.GetLineItem(GraphSettings.CurveLines[k].LineColor, SymbolType.None, 2.0f)
                     : graph.GetLineItem();
@@ -56,15 +56,15 @@ namespace WarThunderParser.Core
 
                     line.Points = curList;
                 }
-                var yAxisLabel = graph.YAxis + (string.IsNullOrEmpty(m_Units[graph.YAxis]) ? "" : (", " + m_Units[graph.YAxis]));
+                var yAxisLabel = graph.YAxis + (string.IsNullOrEmpty(graph.Y_Unit) ? "" : (", " + graph.Y_Unit));
                 if (!yAxises.ContainsKey(yAxisLabel))
                     yAxises.Add(yAxisLabel, pane.AddYAxis(yAxisLabel));
                 line.YAxisIndex = yAxises[yAxisLabel];
                 pane.CurveList.Add(line);
             }
             
-            pane.XAxis.Title.Text = m_Graphs.Last().XAxis 
-                + (string.IsNullOrEmpty(m_Units[m_Graphs.Last().XAxis]) ? "" : (", " + m_Units[m_Graphs.Last().XAxis]));
+            pane.XAxis.Title.Text = Graphs.Last().XAxis 
+                + (string.IsNullOrEmpty(Graphs.Last().X_Unit) ? "" : (", " + Graphs.Last().X_Unit));
             pane.Title.Text = "";
 
             GraphControl.AxisChange();
@@ -127,6 +127,11 @@ namespace WarThunderParser.Core
                 curve.Label.IsVisible = showLegend;
             }
             GraphControl.Invalidate();
+        }
+
+        private void UpdateDataGrid()
+        {
+
         }
 
     }

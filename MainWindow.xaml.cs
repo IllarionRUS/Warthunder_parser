@@ -34,32 +34,38 @@ namespace WarThunderParser
         private bool Started;
         private GraphSettings _graphSettings;
         private CollectSettings _collectSettings;
-        ObservableCollection<Graph> graphCollectionFull { get; set;}
-        ObservableCollection<Graph> graphCollectionSelected { get; set; }
         private FlightDataRecorder[] _recorders;
-        private Dictionary<string, string> _traslateDictionary;
-        private SaveManager _saveManager;
-        private OpenManager _openManager;
+        private Dictionary<string, string> _traslateDictionary;        
         private Dictionary<string, Saver> _graphfileextensions;
         HookDemoHelper _keyHooker = new HookDemoHelper();
 
         public ObservableCollection<CheckedListItem<string>> Ordinats { get; set; }
+        private FdrManager m_Manager;
         private DataProcessingHelper m_DataProcessingHelper;
+
+        private SaveManager m_SaveManager;
+        private OpenManager m_OpenManager;
+
+        public static void ExceptionHandler(object sender, UnhandledExceptionEventArgs args)
+        {
+            var e = (Exception)args.ExceptionObject;
+            MessageBox.Show("Exception caught: " + e.Message + Environment.NewLine + "Runtime terminating: " +
+                            args.IsTerminating);
+        }
 
         public MainWindow()
         {
             InitializeComponent();
+
             AppDomain.CurrentDomain.UnhandledException += ExceptionHandler;
             _graphSettings = new GraphSettings();
             _collectSettings = new CollectSettings();
             this.DataContext = this;
             _keyHooker.SetHook();
             _keyHooker.OnHook += OnHook;
-            _saveManager = new SaveManager();
-            _openManager = new OpenManager();
+            m_SaveManager = new SaveManager();
+            m_OpenManager = new OpenManager();
             _graphfileextensions = new Dictionary<string, Saver> { { "graphics files (*.grph)|*.grph", new BinSaver() } };
-            graphCollectionFull = new ObservableCollection<Graph>();
-            graphCollectionSelected = new ObservableCollection<Graph>();
                                   
             var serializer = new XmlSerializer(typeof(List<string>));
             if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "Filters.xml"))
@@ -73,13 +79,14 @@ namespace WarThunderParser
             {
                 _collectSettings.FilterList = new List<string>();
             }
+
             var zedGraph = (ZedGraphControl)WinHost.Child;
             zedGraph.GraphPane.CurveList.Clear();
-            GraphPane pane = zedGraph.GraphPane;
+            GraphPane pane = zedGraph.GraphPane;           
             pane.Title.Text = "";
             pane.XAxis.Title.Text = "";
             pane.YAxis.Title.Text = "";
-            
+                        
             serializer = new XmlSerializer(typeof(string[][]));
             string[][] openResult=null;
             _traslateDictionary = new Dictionary<string, string>();
@@ -100,15 +107,38 @@ namespace WarThunderParser
 
             Ordinats = new ObservableCollection<CheckedListItem<string>>();
             lb_Measures.ItemsSource = Ordinats;
-        }
-        static void ExceptionHandler(object sender, UnhandledExceptionEventArgs args)
-        {
-            var e = (Exception)args.ExceptionObject;
-            MessageBox.Show("Exception caught: " + e.Message + Environment.NewLine + "Runtime terminating: " +
-                            args.IsTerminating);
+
+            _recorders = new[]
+            {
+                new FlightDataRecorder("http://127.0.0.1:8111/state",true, _collectSettings.FailureDelay),
+                new FlightDataRecorder("http://127.0.0.1:8111/indicators",false, _collectSettings.FailureDelay)
+            };
+            m_Manager = new FdrManager(_recorders, _collectSettings.RequestInterval);                      
+                      
+            m_DataProcessingHelper = new DataProcessingHelper(m_Manager);
+            m_DataProcessingHelper.GraphControl = (ZedGraphControl)WinHost.Child;
+            m_DataProcessingHelper.CollectSettings = _collectSettings;
+            m_DataProcessingHelper.GraphSettings = _graphSettings;
+
+            m_Manager.OnStartDataCollecting += OnStartNewDataCollecting;
+            m_Manager.OnDataCollected += OnDataCollected;
+            m_Manager.OnTotalFailure += OnFailure;
+            m_Manager.OnRecorderFailure += OnRecorderFailure;
         }
 
-        void OnHook(HookDemoHelper.HookEventArgs e)
+        private Graph[] OpenGraph()
+        {
+            var openResult = m_OpenManager.OpenMultiple(_graphfileextensions);
+            if (openResult == null) return null;
+            return openResult.Cast<Graph>().ToArray();
+        }
+
+        private void SaveGraph(Graph toSave)
+        {
+            m_SaveManager.Save(_graphfileextensions, toSave, toSave.ToString());
+        }
+
+        private void OnHook(HookDemoHelper.HookEventArgs e)
         {
            if ((e.Code == 120)&&(!Started))
             {
@@ -119,33 +149,21 @@ namespace WarThunderParser
                 StopButton_Click(new object(), new RoutedEventArgs());
             }
         }
-       
-        Graph[] OpenGraph()
-        {
-           
-            var openResult = _openManager.OpenMultiple(_graphfileextensions);
-            if (openResult == null) return null;
-            return openResult.Cast<Graph>().ToArray();
-        }
 
-        void SaveGraph(Graph toSave)
-        {
-            _saveManager.Save(_graphfileextensions, toSave, toSave.ToString());
-        }
-        
-        void OnFailure(FdrManagerEventArgs e)
+        private void OnFailure(FdrManagerEventArgs e)
         {
             Action onFailureAction = delegate()
             {
                 StatusLabelMain.Content = "Сбор данных завершился с ошибками. Нажмите Start или F9 для начала нового сбора.";
                 Started = false;
             };
-            if (!Started) return;
+            if (!Started)
+                return;
             Dispatcher.Invoke(onFailureAction);
             MessageBox.Show(e.Message);            
         }
 
-        void OnRecorderFailure(FdrRecorderFailureEventArgs e)
+        private void OnRecorderFailure(FdrRecorderFailureEventArgs e)
         {
             if (!Started) return;
             StatusLabelSecond.Content = "Сборщик " + e.Recorder.Uri + " прекратил сбор с сообщением: " + e.Reason;
@@ -153,40 +171,21 @@ namespace WarThunderParser
 
         private void StartButton_Click(object sender, RoutedEventArgs e)
         {
-            if (Started) return;
+            if (Started)
+                return;
             Started = true;
-            _recorders = new []
-            {
-                new FlightDataRecorder("http://127.0.0.1:8111/state",true, _collectSettings.FailureDelay),
-                new FlightDataRecorder("http://127.0.0.1:8111/indicators",false, _collectSettings.FailureDelay)
-            };
-            DataGrid1.Columns.Clear();
-            _manager = new FdrManager(_recorders, _collectSettings.RequestInterval);
-            m_DataProcessingHelper = new DataProcessingHelper(_manager);
-            m_DataProcessingHelper.GraphControl = (ZedGraphControl)WinHost.Child;
-            m_DataProcessingHelper.CollectSettings = _collectSettings;
-            m_DataProcessingHelper.GraphSettings = _graphSettings;
 
-            _manager.OnStartDataCollecting += OnStartNewDataCollecting;
-            _manager.OnDataCollected += OnDataCollected;
-            _manager.OnTotalFailure += OnFailure;
-            _manager.OnRecorderFailure += OnRecorderFailure;
-            _manager.StartDataCollect();
-        }
-        
-        private FdrManager _manager;
+            DataGrid1.Columns.Clear();
+            m_Manager.StartDataCollect();
+        }       
 
         private void StopButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!Started) return;
-            _manager.StopDataCollect();  
+            if (!Started)
+                return;
+            m_Manager.StopDataCollect();  
         }
-
-        private void Button_Click_1(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show((0.4%0.5).ToString());
-        }
-
+        
         private void btn_Excel_Click(object sender, RoutedEventArgs e)
         {
             /*
@@ -255,41 +254,30 @@ namespace WarThunderParser
 
         private void btn_Graph_Save_Click(object sender, RoutedEventArgs e)
         {
-            /*
-            if ((GraphListBox.SelectedIndex == -1) && (currentGraph != null))
+            if (m_DataProcessingHelper == null || m_DataProcessingHelper.Graphs == null || m_DataProcessingHelper.Graphs.Count == 0)
             {
-                currentGraph.GraphName = (new AskGraphNameWindow()).GetName(currentGraph.GraphName);
-                SaveGraph(currentGraph);
-                return;
+                MessageBox.Show("Графики не выбраны");
             }
-            foreach (Graph graph in GraphListBox.SelectedItems)
+            else
             {
-                SaveGraph(graph);
-            }
-            */
+                foreach (Graph graph in m_DataProcessingHelper.Graphs)
+                {
+                    SaveGraph(graph);
+                }
+            }            
         }       
 
         private void btn_Graph_Open_Click(object sender, RoutedEventArgs e)
         {
-            /*
             var opened = OpenGraph();
-            if (opened == null) return;
-            foreach (var graph in opened)
-            {
-                bool noDouble = true;
-                foreach (var graph1 in graphCollectionFull)
-                {
-                    noDouble &= !graph.Equals(graph1);
-                }
-                if (noDouble) graphCollectionFull.Add(graph);
+            if (opened == null)
+                return;
+            m_DataProcessingHelper.Clear();
+            cb_Abscissa.Items.Clear();
+            Ordinats.Clear();
 
-            }
-            if (GraphListBox.SelectedIndex == -1)
-            {
-                GraphListBox.SelectedItems.Add(GraphListBox.Items[0]);
-            }
-            GraphListExpander.IsExpanded = true;
-            */
+            Array.ForEach(opened, g => m_DataProcessingHelper.Graphs.Add(g));
+            m_DataProcessingHelper.Redraw();
         }
         
         private void btn_Help_Click(object sender, RoutedEventArgs e)
@@ -302,12 +290,6 @@ namespace WarThunderParser
             Application.Current.Shutdown();
         }
 
-        private const int MinRequestInterval = 0;
-        private const int DefaultRequestInterval = 0;
-
-        private const int MinInterpInterval = 50;
-        private const int DefaultInterpInterval = 200;
-
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Application.Current.Shutdown();
@@ -315,26 +297,22 @@ namespace WarThunderParser
 
         private void btn_Graph_Prefs_Click(object sender, RoutedEventArgs e)
         {
-            GraphSettings result = (new GraphSetupWindow()).ShowSettings(_graphSettings);
+            GraphSettings result = (new GraphSetupWindow()).ShowSettings(_graphSettings);            
             if (result != null)
             {
                 _graphSettings = result;
                 m_DataProcessingHelper.GraphSettings = _graphSettings;
             }
-           // Redraw();
         }
 
         private void btn_Preferences_Click(object sender, RoutedEventArgs e)
         {
             CollectSettings result = (new CollectSetupWindow()).ShowSettings(_collectSettings);
-            /*
             if (result != null)
             {
                 _collectSettings = result;
-            }
-            if(_adapter==null)return;
-            _adapter.ReCalc(_collectSettings.FilterList,_traslateDictionary,_collectSettings.InterpInterval);
-            */
+                m_DataProcessingHelper.CollectSettings = _collectSettings;
+            } 
         }
 
         private void DataGrid1_MouseDown(object sender, MouseButtonEventArgs e)
@@ -349,7 +327,7 @@ namespace WarThunderParser
 
         private void cb_Abscissa_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            m_DataProcessingHelper.SetAbscissa(cb_Abscissa.SelectedItem.ToString());
+            m_DataProcessingHelper.SetAbscissa(cb_Abscissa.SelectedItem == null ? null : cb_Abscissa.SelectedItem.ToString());
         }
 
         private void onOrdinateChecked(object sender, PropertyChangedEventArgs args)
@@ -361,6 +339,15 @@ namespace WarThunderParser
                 m_DataProcessingHelper.RemoveOrdinate(item.Item);
         }
 
+        private void btn_ToMetrical_Click(object sender, RoutedEventArgs e)
+        {
+            m_DataProcessingHelper.ConvertToMetrical();
+        }
+
+        private void btn_ToImperial_Click(object sender, RoutedEventArgs e)
+        {
+            m_DataProcessingHelper.ConvertToImperial();
+        }
     }
         
 }

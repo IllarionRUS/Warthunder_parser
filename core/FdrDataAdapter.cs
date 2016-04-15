@@ -19,6 +19,7 @@ using Label = System.Windows.Controls.Label;
 
 namespace WarThunderParser
 {
+    [Obsolete]
     public class FdrDataAdapter
     {
         const string TimeTranslate = "Время, мс";

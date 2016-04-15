@@ -25,6 +25,8 @@
                     <Button x:Name="btn_Start" Content="Start"   Width="75" Click="StartButton_Click" />
                     <Button x:Name="btn_Stop" Content="Stop"   Width="75" Click="StopButton_Click"/>
                     <Button x:Name="btn_Excel" Content="To Excel"  Width="75" Margin="5" Padding="3" Click="btn_Excel_Click"/>
+                    <Button x:Name="btn_ToMetrical" Content="В метрическую"  Width="87" Margin="0,5" Padding="3" Click="btn_ToMetrical_Click"/>
+                    <Button x:Name="btn_ToImperial" Content="В имперскую"  Width="75" Margin="5" Padding="3" Click="btn_ToImperial_Click"/>
                     <Button x:Name="btn_Help" Content="Помощь"  Margin="5" Padding="3" Click="btn_Help_Click"/>
                     <Button x:Name="btn_Preferences" Content="Настройки"  Margin="5" Padding="3" Click="btn_Preferences_Click" RenderTransformOrigin="-7.527,0.441" />
                 </ToolBar>
@@ -79,13 +81,18 @@
                 <ComboBox x:Name="cb_Abscissa" HorizontalAlignment="Left" Margin="0,5,0,0" Grid.Row="1" VerticalAlignment="Top" Width="202"
                           SelectionChanged="cb_Abscissa_SelectionChanged"
                           />
-                <ListBox x:Name="lb_Measures" HorizontalAlignment="Left" Height="635" Margin="0,48,0,0" Grid.Row="1" VerticalAlignment="Top" Width="202" Grid.RowSpan="2"
+                <ListBox x:Name="lb_Measures" HorizontalAlignment="Left" Margin="0,48,0,0" Grid.Row="1" Width="202"
                          ItemsSource="{Binding Ordinats}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <CheckBox IsChecked="{Binding IsChecked}" Content="{Binding Item}"/>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="{x:Type ListBoxItem}">
+                            <Setter Property="Focusable" Value="False"/>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
                 </ListBox>
                 <Label x:Name="label" Content="Ось ординат:" HorizontalAlignment="Left" Margin="0,25,0,0" Grid.Row="1" VerticalAlignment="Top"/>
             </Grid>

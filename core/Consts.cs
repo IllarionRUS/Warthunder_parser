@@ -9,9 +9,11 @@ namespace WarThunderParser.Core
     {
         public static class Value
         {
-            public const string Time = "Time";
-            public const string Acceleration = "Acceleration";
+            public const string Time = "Time";            
             public const string TAS = "TAS";
+            public const string IAS = "IAS";
+            public const string Acceleration_TAS = "Acceleration_TAS";
+            public const string Acceleration_IAS = "Acceleration_IAS";
         }
 
         public static class Unit
@@ -27,8 +29,8 @@ namespace WarThunderParser.Core
             public const string Acc_M = "km/h^2";
             public const string Acc_I = "mil/h^2";
 
-            public static readonly string[] Imperial = new string[] { Alt_I, Speed_I, Climb_I };
-            public static readonly string[] Metrical = new string[] { Alt_M, Speed_M, Climb_M };
+            public static readonly string[] Imperial = new string[] { Alt_I, Speed_I, Climb_I, Acc_I };
+            public static readonly string[] Metrical = new string[] { Alt_M, Speed_M, Climb_M, Acc_M };
         }
     }
 }
