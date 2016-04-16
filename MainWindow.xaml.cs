@@ -438,18 +438,7 @@ namespace WarThunderParser
                 
         private void OnDataCollected(FdrManagerEventArgs e)
         {
-            Ordinats.Clear();
-            cb_Abscissa.Items.Clear();
 
-            foreach (var title in m_DataProcessingHelper.getCollectedMeasuresNames())
-            {
-                CheckedListItem<string> item = new CheckedListItem<string>() { Item = title };
-                item.PropertyChanged += onOrdinateChecked;
-                Ordinats.Add(item);
-                cb_Abscissa.Items.Add(title);
-            }
-
-            /*
             _adapter = new FdrDataAdapter(DataGrid1, CheckBoxPanel, GraphPanel, _collectSettings.FilterList, _traslateDictionary, _collectSettings.InterpInterval);
             _manager.InitializeAdapter(_adapter);
             TableStackPanel.Visibility = Visibility.Visible;
@@ -466,8 +455,6 @@ namespace WarThunderParser
             {
                 DrawNewGraph();
             }
-            */
-            StatusLabelMain.Content = "Данные успешно собраны. Нажмите Start или F9 для начала нового сбора.";
             Started = false;
         }
 
