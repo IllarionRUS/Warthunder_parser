@@ -14,8 +14,8 @@ namespace WarThunderParser.Core
         // for proper recalcs on collectSettings change
         private DateTime? m_SynchTime;
 
-        private MetricalConverter m_MetricalConverter;
-        private ImperialConverter m_ImperialConverter;
+        private ImperialToMetrical m_MetricalConverter;
+        private MetricalToImperial m_ImperialConverter;
 
         private void CollectData()
         {
@@ -121,19 +121,19 @@ namespace WarThunderParser.Core
         private abstract class UnitConverter
         {
             private DataProcessingHelper processingHelper;
-            private string[] convertingUnits;
+            private string[] convertFrom;
 
             public UnitConverter(DataProcessingHelper processingHelper, string[] convertingUnits)
             {
                 this.processingHelper = processingHelper;
-                this.convertingUnits = convertingUnits;
+                this.convertFrom = convertingUnits;
             }
 
             internal abstract KeyValuePair<string, double> GetNewUnitAndFactor(string unit);
 
             public void Convert()
             {
-                var toConvert = processingHelper.m_Data.Where(d => Array.IndexOf(convertingUnits, processingHelper.m_Units[d.Key]) >= 0).ToArray();
+                var toConvert = processingHelper.m_Data.Where(d => Array.IndexOf(convertFrom, processingHelper.m_Units[d.Key]) >= 0).ToArray();
 
                 foreach (var keyValue in toConvert)
                 {
@@ -164,13 +164,14 @@ namespace WarThunderParser.Core
                     processingHelper.m_Units[keyValue.Key] = newUnit;
                 }
 
+                processingHelper.UpdateDataGrid();
                 processingHelper.Redraw();
             }
         }
 
-        private class MetricalConverter : UnitConverter
+        private class ImperialToMetrical : UnitConverter
         {
-            public MetricalConverter(DataProcessingHelper processingHelper, string[] convertingUnits) : base(processingHelper, convertingUnits)
+            public ImperialToMetrical(DataProcessingHelper processingHelper) : base(processingHelper, Consts.Unit.Imperial)
             {
             }
 
@@ -203,9 +204,9 @@ namespace WarThunderParser.Core
             }
         }
 
-        private class ImperialConverter : UnitConverter
+        private class MetricalToImperial : UnitConverter
         {
-            public ImperialConverter(DataProcessingHelper processingHelper, string[] convertingUnits) : base(processingHelper, convertingUnits)
+            public MetricalToImperial(DataProcessingHelper processingHelper) : base(processingHelper, Consts.Unit.Metrical)
             {
             }
 

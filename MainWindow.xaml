@@ -30,19 +30,34 @@
                     <Button x:Name="btn_Help" Content="Помощь"  Margin="5" Padding="3" Click="btn_Help_Click"/>
                     <Button x:Name="btn_Preferences" Content="Настройки"  Margin="5" Padding="3" Click="btn_Preferences_Click" RenderTransformOrigin="-7.527,0.441" />
                 </ToolBar>
-                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Left">
-                    <StackPanel Name="TableStackPanel" Visibility="Hidden">
-                        <Expander Header="Выбрать параметры для отображения в таблице">
-                            <StackPanel>
-                                <StackPanel Orientation="Horizontal"/>
-                                <WrapPanel x:Name="CheckBoxPanel"/>
-                            </StackPanel>
-                        </Expander>
-                        <Expander Header="Показать таблицу">
-                            <DataGrid x:Name="DataGrid1" IsReadOnly="True" AllowDrop="False" MinHeight="10" HorizontalAlignment="Left" ItemsSource="{Binding DoubleCollection.Collection}" AutoGenerateColumns="False"  MouseDown="DataGrid1_MouseDown"/>
-                        </Expander>
-                    </StackPanel>
-                </ScrollViewer>
+                <Grid Grid.Row="1" HorizontalAlignment="Left" Background="Lavender">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Content="Параметры для отображения:" Height="22" Grid.Row="0" Grid.Column ="0" Margin="0,5,5,0"/>
+                    <ListBox x:Name="lb_Columns" HorizontalAlignment="Left"  Width="202"
+                         ItemsSource="{Binding Ordinats}" BorderThickness="2"
+                         Grid.Row="1"
+                         Margin="2,2,5,2"
+                         >
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding IsChecked}" Content="{Binding Item}"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="{x:Type ListBoxItem}">
+                                <Setter Property="Focusable" Value="False"/>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                    </ListBox>
+                    <DataGrid x:Name="dg_Data" Grid.Column="1" Grid.RowSpan="2"/>
+                </Grid>
                 <StatusBar Grid.Row="2">
                     <Label Name="StatusLabelMain">Нажмите Start или F9 для начала сбора данных.</Label>
                     <Label Name="StatusLabelSecond"></Label>

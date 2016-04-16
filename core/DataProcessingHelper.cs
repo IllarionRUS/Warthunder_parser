@@ -9,17 +9,15 @@ using ZedGraph;
 namespace WarThunderParser.Core
 {
     // TODO grid; filters; translates;
+    // TODO localization;
+    // TODO full state save; measures;
     public partial class DataProcessingHelper
     {
-        public struct ResultDataUI
-        {
-            public DataGrid DataGrid { get; set; }
-
-        }
 
         public List<Graph> Graphs { get; private set; }
         public FdrManager RecordersManager { get; private set; }
-        public ZedGraphControl GraphControl { get; set; }
+        public DataGrid DataGrid { get; set; }
+        public ZedGraphControl GraphControl { get; set; }        
         public GraphSettings GraphSettings
         {
             get { return m_GraphSettings; }
@@ -40,6 +38,7 @@ namespace WarThunderParser.Core
                     CollectData();
                 }
                 Redraw();
+                UpdateDataGrid();
             }
         }        
 
@@ -53,8 +52,8 @@ namespace WarThunderParser.Core
             RecordersManager = mngr;
 
             Graphs = new List<Graph>();
-            m_MetricalConverter = new MetricalConverter(this, Consts.Unit.Metrical);
-            m_ImperialConverter = new ImperialConverter(this, Consts.Unit.Imperial);
+            m_MetricalConverter = new ImperialToMetrical(this);
+            m_ImperialConverter = new MetricalToImperial(this);
 
             RecordersManager.OnDataCollected += onDataCollected;
             RecordersManager.OnStartDataCollecting += onStartDataCollecting;
@@ -113,6 +112,7 @@ namespace WarThunderParser.Core
             m_Data.Clear();
             m_Units.Clear();
             Graphs.Clear();
+            DataGrid.Columns.Clear();
 
             if (GraphControl != null)
             {
@@ -140,6 +140,7 @@ namespace WarThunderParser.Core
             m_SynchTime = null;
             Clear();
             CollectData();
+            UpdateDataGrid();
         }       
 
         private void onRecorderFailure(FdrRecorderFailureEventArgs args)

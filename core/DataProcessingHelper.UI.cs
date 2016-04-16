@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Windows.Controls;
+using System.Windows.Data;
 using ZedGraph;
 
 namespace WarThunderParser.Core
 {
 
     public partial class DataProcessingHelper
-    {        
+    {
         public void Redraw()
         {
             if (GraphControl == null)
@@ -131,7 +134,26 @@ namespace WarThunderParser.Core
 
         private void UpdateDataGrid()
         {
+            DataGrid.Columns.Clear();
+            DataGrid.AutoGenerateColumns = false;
+            if (m_Data == null || m_DataSize == 0)
+                return;
 
+
+            DataGrid.ItemsSource = m_Data;
+           
+            foreach (var keyValue in m_Data)
+            {
+                var dataColumn = new DataGridTextColumn
+                {
+                    Header = keyValue.Key
+                        + (string.IsNullOrEmpty(m_Units[keyValue.Key])
+                            ? ""
+                            : ", " + m_Units[keyValue.Key])
+                };
+               
+                DataGrid.Columns.Add(dataColumn);
+            }
         }
 
     }

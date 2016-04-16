@@ -39,6 +39,7 @@ namespace WarThunderParser
         private Dictionary<string, Saver> _graphfileextensions;
         HookDemoHelper _keyHooker = new HookDemoHelper();
 
+        public ObservableCollection<CheckedListItem<string>> TableColumns { get; set; }
         public ObservableCollection<CheckedListItem<string>> Ordinats { get; set; }
         private FdrManager m_Manager;
         private DataProcessingHelper m_DataProcessingHelper;
@@ -105,6 +106,8 @@ namespace WarThunderParser
                 }
             }
 
+            dg_Data.EnableColumnVirtualization = true;
+            dg_Data.EnableRowVirtualization = true;
             Ordinats = new ObservableCollection<CheckedListItem<string>>();
             lb_Measures.ItemsSource = Ordinats;
 
@@ -113,10 +116,11 @@ namespace WarThunderParser
                 new FlightDataRecorder("http://127.0.0.1:8111/state",true, _collectSettings.FailureDelay),
                 new FlightDataRecorder("http://127.0.0.1:8111/indicators",false, _collectSettings.FailureDelay)
             };
-            m_Manager = new FdrManager(_recorders, _collectSettings.RequestInterval);                      
-                      
+            m_Manager = new FdrManager(_recorders, _collectSettings.RequestInterval);
+            
             m_DataProcessingHelper = new DataProcessingHelper(m_Manager);
             m_DataProcessingHelper.GraphControl = (ZedGraphControl)WinHost.Child;
+            m_DataProcessingHelper.DataGrid = dg_Data;
             m_DataProcessingHelper.CollectSettings = _collectSettings;
             m_DataProcessingHelper.GraphSettings = _graphSettings;
 
@@ -175,7 +179,7 @@ namespace WarThunderParser
                 return;
             Started = true;
 
-            DataGrid1.Columns.Clear();
+            dg_Data.Columns.Clear();
             m_Manager.StartDataCollect();
         }       
 
@@ -248,7 +252,7 @@ namespace WarThunderParser
         void OnStartNewDataCollecting(FdrManagerEventArgs e)
         {
             StatusLabelSecond.Content = "";
-            TableStackPanel.Visibility = Visibility.Collapsed;
+            //TableStackPanel.Visibility = Visibility.Collapsed;
             StatusLabelMain.Content = "Идет сбор данных, нажмите Stop или F10 для завершения.";
         }
 
@@ -317,7 +321,7 @@ namespace WarThunderParser
 
         private void DataGrid1_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            DataGrid1.UnselectAll();
+            dg_Data.UnselectAll();
         }
 
         private void WinHost_ChildChanged(object sender, System.Windows.Forms.Integration.ChildChangedEventArgs e)
