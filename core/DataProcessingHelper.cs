@@ -8,12 +8,11 @@ using ZedGraph;
 
 namespace WarThunderParser.Core
 {
-    // TODO grid; filters; translates;
-    // TODO localization;
-    // TODO full state save; measures;
+    // TODO full state save; 
+    // TODO localization, translates;
+    // TODO measures;
     public partial class DataProcessingHelper
     {
-
         public List<Graph> Graphs { get; private set; }
         public FdrManager RecordersManager { get; private set; }
         public DataGrid DataGrid { get; set; }
@@ -38,7 +37,13 @@ namespace WarThunderParser.Core
                     CollectData();
                 }
                 Redraw();
+                var visibleColumns = DataGrid.Columns
+                    .Where(c => c.Visibility == System.Windows.Visibility.Visible)
+                    .Select(s => s.Header.ToString().Split(",".ToCharArray())[0])
+                    .ToList();
                 UpdateDataGrid();
+                foreach (var columnName in visibleColumns)
+                    ShowColumn(columnName);
             }
         }        
 
@@ -113,6 +118,7 @@ namespace WarThunderParser.Core
             m_Units.Clear();
             Graphs.Clear();
             DataGrid.Columns.Clear();
+            DataGrid.ItemsSource = null;           
 
             if (GraphControl != null)
             {

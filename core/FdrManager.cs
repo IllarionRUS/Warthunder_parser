@@ -80,6 +80,7 @@ namespace WarThunderParser
             State = ManagerState.Collecting;
             foreach (var flightDataRecorder in Recorders) 
             {
+                flightDataRecorder.Clear();
                 flightDataRecorder.OnFailure += RecorderFailure;
                 _recorderThreads.Add(flightDataRecorder, new Thread(RequestDataAction));
                 _recorderThreads[flightDataRecorder].Start(flightDataRecorder);
@@ -103,7 +104,8 @@ namespace WarThunderParser
                 else
                     _finishedRecorders.Remove(flightDataRecorder);
                 State = ManagerState.DataCollected;
-                if (OnDataCollected != null) OnDataCollected(new FdrManagerEventArgs(""));
+                if (OnDataCollected != null)
+                    OnDataCollected(new FdrManagerEventArgs(""));
         }
         // Инициализирует адаптер данными с рекордеров 
         public bool InitializeAdapter(FdrDataAdapter adapter)

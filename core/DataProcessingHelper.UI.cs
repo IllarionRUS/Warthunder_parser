@@ -12,6 +12,7 @@ namespace WarThunderParser.Core
 
     public partial class DataProcessingHelper
     {
+        
         public void Redraw()
         {
             if (GraphControl == null)
@@ -139,32 +140,56 @@ namespace WarThunderParser.Core
             if (m_Data == null || m_DataSize == 0)
                 return;
 
+            var dataList = m_Data.ToList();
             ObservableCollection<double[]> tableValues = new ObservableCollection<double[]>();
             for (int i = 0; i < m_DataSize; i++)
             {
                 var snapshot = new double[m_Data.Count()];
                 int j = 0;
-                foreach (var keyValue in m_Data)
+                foreach (var keyValue in dataList)
                 {
                     snapshot[j++] = keyValue.Value[i];
                 }
                 tableValues.Add(snapshot);
             }
             DataGrid.ItemsSource = tableValues;
-            var keys = m_Data.Keys.ToList();
             for (int i = 0; i < m_Data.Count; i++)
             {
                 var dataColumn = new DataGridTextColumn
                 {
-                    Header = keys[i]
-                        + (string.IsNullOrEmpty(m_Units[keys[i]])
+                    Header = dataList[i].Key
+                        + (string.IsNullOrEmpty(m_Units[dataList[i].Key])
                             ? ""
-                            : ", " + m_Units[keys[i]]),
-                    Binding = new Binding("[" + i +"]") { StringFormat = "N4" }                    
+                            : ", " + m_Units[dataList[i].Key]),
+                    IsReadOnly = true,
+                    Visibility = System.Windows.Visibility.Collapsed,
+                    Binding = new Binding("[" + i +"]") { StringFormat = "N4" }                                       
                 };
                
                 DataGrid.Columns.Add(dataColumn);
             }
+        }
+
+        public void ShowColumn(string name)
+        {
+            DataGrid.Columns.Where(c => IsColumnOfParam(name, c.Header.ToString()))
+                .ToList().ForEach(c => c.Visibility = System.Windows.Visibility.Visible);
+        }
+
+        public void HideColumn(string name)
+        {
+            DataGrid.Columns.Where(c => IsColumnOfParam(name, c.Header.ToString()))
+               .ToList().ForEach(c => c.Visibility = System.Windows.Visibility.Collapsed);
+        }
+
+        private bool IsColumnOfParam(string paramName, string columnName)
+        {
+            var split = columnName.Split(",".ToCharArray());
+            if (columnName.Split(",".ToCharArray()).Length == 2)
+                return string.Equals(paramName, split[0].Trim(), StringComparison.InvariantCultureIgnoreCase) 
+                    && string.Equals(split[1].Trim(), m_Units[split[0]].Trim(), StringComparison.InvariantCultureIgnoreCase);
+            else
+                return string.Equals(paramName, columnName.Trim(), StringComparison.InvariantCultureIgnoreCase);
         }
 
     }

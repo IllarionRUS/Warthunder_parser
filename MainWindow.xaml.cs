@@ -109,7 +109,9 @@ namespace WarThunderParser
             dg_Data.EnableColumnVirtualization = true;
             dg_Data.EnableRowVirtualization = true;
             Ordinats = new ObservableCollection<CheckedListItem<string>>();
+            TableColumns = new ObservableCollection<CheckedListItem<string>>();
             lb_Measures.ItemsSource = Ordinats;
+            lb_Columns.ItemsSource = TableColumns;
 
             _recorders = new[]
             {
@@ -156,6 +158,10 @@ namespace WarThunderParser
 
         private void OnFailure(FdrManagerEventArgs e)
         {
+            TableColumns.Clear();
+            Ordinats.Clear();
+            cb_Abscissa.Items.Clear();
+
             Action onFailureAction = delegate()
             {
                 StatusLabelMain.Content = "Сбор данных завершился с ошибками. Нажмите Start или F9 для начала нового сбора.";
@@ -169,7 +175,8 @@ namespace WarThunderParser
 
         private void OnRecorderFailure(FdrRecorderFailureEventArgs e)
         {
-            if (!Started) return;
+            if (!Started)
+                return;
             StatusLabelSecond.Content = "Сборщик " + e.Recorder.Uri + " прекратил сбор с сообщением: " + e.Reason;
         }
 
@@ -178,8 +185,7 @@ namespace WarThunderParser
             if (Started)
                 return;
             Started = true;
-
-            dg_Data.Columns.Clear();
+            
             m_Manager.StartDataCollect();
         }       
 
@@ -192,67 +198,60 @@ namespace WarThunderParser
         
         private void btn_Excel_Click(object sender, RoutedEventArgs e)
         {
-            /*
-            if ((_adapter == null) || (_adapter.Values == null)) return;
-            if (!_collectSettings.ExcelSelectedOnly)
+            try
             {
-                DataGrid1.SelectAll();
+                if (m_DataProcessingHelper.GetCollectedMeasuresNames().Length == 0)
+                    return;
+                if (!_collectSettings.ExcelSelectedOnly)
+                {
+                    dg_Data.SelectAll();
+                }
+                dg_Data.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
+                ApplicationCommands.Copy.Execute(null, dg_Data);
+                Microsoft.Office.Interop.Excel.Application app;
+                Workbook workbook;
+                Worksheet worksheet;
+                object misvalue = System.Reflection.Missing.Value;
+                app = new Microsoft.Office.Interop.Excel.Application();
+                app.Visible = true;
+                workbook = app.Workbooks.Add(misvalue);
+                worksheet = (Worksheet)workbook.Worksheets.Item[1];
+                Range CR = (Range)worksheet.Cells[1, 1];
+                CR.Select();
+                worksheet.PasteSpecial(CR, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, true);
             }
-            DataGrid1.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
-            ApplicationCommands.Copy.Execute(null,DataGrid1);
-            Microsoft.Office.Interop.Excel.Application app;
-            Workbook workbook;
-            Worksheet worksheet;
-            object misvalue = System.Reflection.Missing.Value;
-            app = new Microsoft.Office.Interop.Excel.Application();
-            app.Visible = true;
-            workbook = app.Workbooks.Add(misvalue);
-            worksheet = (Worksheet)workbook.Worksheets.Item[1];
-            Range CR = (Range)worksheet.Cells[1, 1];
-            CR.Select();
-            worksheet.PasteSpecial(CR, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, true);
-            */
+            catch (Exception ex)
+            {
+                MessageBox.Show("Произошла ошибка! (" + ex.Message + ")");
+            }
         }
                 
         private void OnDataCollected(FdrManagerEventArgs e)
         {
             Ordinats.Clear();
             cb_Abscissa.Items.Clear();
+            TableColumns.Clear();
 
             foreach (var title in m_DataProcessingHelper.GetCollectedMeasuresNames())
             {
                 CheckedListItem<string> item = new CheckedListItem<string>() { Item = title };
                 item.PropertyChanged += onOrdinateChecked;
-                Ordinats.Add(item);
+                Ordinats.Add(item);                
                 cb_Abscissa.Items.Add(title);
+
+                item = new CheckedListItem<string>() { Item = title };
+                item.PropertyChanged += onTabColumnChecked;
+                TableColumns.Add(item);
             }
 
-            /*
-            _adapter = new FdrDataAdapter(DataGrid1, CheckBoxPanel, GraphPanel, _collectSettings.FilterList, _traslateDictionary, _collectSettings.InterpInterval);
-            _manager.InitializeAdapter(_adapter);
-            TableStackPanel.Visibility = Visibility.Visible;
-            StatusLabelMain.Content = "Данные успешно собраны. Нажмите Start или F9 для начала нового сбора.";
-            foreach (var child in GraphPanel.Children)
-            {
-                var axisChooseBox = child as ComboBox;
-                if (axisChooseBox  != null)
-                {
-                    axisChooseBox.DropDownClosed += AxisChooseCombobox_DropDownClosed;
-                }
-            } 
-            if (GraphListBox.SelectedIndex == -1)
-            {
-                DrawNewGraph();
-            }
-            */
             StatusLabelMain.Content = "Данные успешно собраны. Нажмите Start или F9 для начала нового сбора.";
             Started = false;
         }
 
         void OnStartNewDataCollecting(FdrManagerEventArgs e)
         {
+            TableColumns.Clear();
             StatusLabelSecond.Content = "";
-            //TableStackPanel.Visibility = Visibility.Collapsed;
             StatusLabelMain.Content = "Идет сбор данных, нажмите Stop или F10 для завершения.";
         }
 
@@ -319,11 +318,6 @@ namespace WarThunderParser
             } 
         }
 
-        private void DataGrid1_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            dg_Data.UnselectAll();
-        }
-
         private void WinHost_ChildChanged(object sender, System.Windows.Forms.Integration.ChildChangedEventArgs e)
         {
 
@@ -341,6 +335,15 @@ namespace WarThunderParser
                 m_DataProcessingHelper.AddOrdinate(item.Item);
             else
                 m_DataProcessingHelper.RemoveOrdinate(item.Item);
+        }
+
+        private void onTabColumnChecked(object sender, PropertyChangedEventArgs args)
+        {
+            CheckedListItem<string> item = sender as CheckedListItem<string>;
+            if (item.IsChecked)
+                m_DataProcessingHelper.ShowColumn(item.Item);
+            else
+                m_DataProcessingHelper.HideColumn(item.Item);
         }
 
         private void btn_ToMetrical_Click(object sender, RoutedEventArgs e)

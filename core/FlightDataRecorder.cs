@@ -277,5 +277,10 @@ namespace WarThunderParser
             }
             return result;
         }
+
+        public void Clear()
+        {
+            _paramsDictionary.Clear();
+        }
     }
 }

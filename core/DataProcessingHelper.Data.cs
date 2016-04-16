@@ -41,6 +41,9 @@ namespace WarThunderParser.Core
 
                 foreach (var name in recorder.Names)
                 {
+                    if (m_CollectSettings.AllowInputFilters && m_CollectSettings.FilterList.Contains(name))
+                        continue;
+
                     if (m_Data.ContainsKey(name))
                         continue;
 
@@ -164,8 +167,14 @@ namespace WarThunderParser.Core
                     processingHelper.m_Units[keyValue.Key] = newUnit;
                 }
 
-                processingHelper.UpdateDataGrid();
                 processingHelper.Redraw();
+                var visibleColumns = processingHelper.DataGrid.Columns
+                    .Where(c => c.Visibility == System.Windows.Visibility.Visible)
+                    .Select(s => s.Header.ToString().Split(",".ToCharArray())[0])
+                    .ToList();
+                processingHelper.UpdateDataGrid();
+                foreach (var columnName in visibleColumns)
+                    processingHelper.ShowColumn(columnName);                
             }
         }
 
