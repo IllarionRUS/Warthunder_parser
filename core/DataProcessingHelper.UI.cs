@@ -139,17 +139,28 @@ namespace WarThunderParser.Core
             if (m_Data == null || m_DataSize == 0)
                 return;
 
-
-            DataGrid.ItemsSource = m_Data;
-           
-            foreach (var keyValue in m_Data)
+            ObservableCollection<double[]> tableValues = new ObservableCollection<double[]>();
+            for (int i = 0; i < m_DataSize; i++)
+            {
+                var snapshot = new double[m_Data.Count()];
+                int j = 0;
+                foreach (var keyValue in m_Data)
+                {
+                    snapshot[j++] = keyValue.Value[i];
+                }
+                tableValues.Add(snapshot);
+            }
+            DataGrid.ItemsSource = tableValues;
+            var keys = m_Data.Keys.ToList();
+            for (int i = 0; i < m_Data.Count; i++)
             {
                 var dataColumn = new DataGridTextColumn
                 {
-                    Header = keyValue.Key
-                        + (string.IsNullOrEmpty(m_Units[keyValue.Key])
+                    Header = keys[i]
+                        + (string.IsNullOrEmpty(m_Units[keys[i]])
                             ? ""
-                            : ", " + m_Units[keyValue.Key])
+                            : ", " + m_Units[keys[i]]),
+                    Binding = new Binding("[" + i +"]") { StringFormat = "N4" }                    
                 };
                
                 DataGrid.Columns.Add(dataColumn);
