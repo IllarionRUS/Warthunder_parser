@@ -68,7 +68,7 @@ namespace WarThunderParser.Core
 
         public void BuildGraph(string x, string y)
         {
-            if (RecordersManager.State != ManagerState.DataCollected)
+            if (m_Data.Count == 0)
                 return;
 
             if (string.IsNullOrWhiteSpace(x))
@@ -117,12 +117,12 @@ namespace WarThunderParser.Core
             m_Data.Clear();
             m_Units.Clear();
             Graphs.Clear();
+            m_SynchTime = null;
             DataGrid.Columns.Clear();
             DataGrid.ItemsSource = null;           
 
             if (GraphControl != null)
-            {
-                GraphControl.GraphPane.CurveList.Clear();
+            {                
                 GraphPane pane = GraphControl.GraphPane;
                 if (pane != null)
                 {
@@ -131,7 +131,12 @@ namespace WarThunderParser.Core
                         pane.XAxis.Title.Text = "";
                     if (pane.YAxis != null)
                         pane.YAxis.Title.Text = "";
+                    GraphControl.GraphPane.CurveList.Clear();
+                    GraphControl.GraphPane.GraphObjList.Clear();
                 }
+                
+                
+                GraphControl.Invalidate();
             }       
         }
 

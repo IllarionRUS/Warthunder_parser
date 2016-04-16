@@ -15,21 +15,24 @@
     </Window.Resources>
     <TabControl Background="Lavender">
         <TabItem x:Name="Tab_Main" Header="Сбор данных">
-            <Grid Background="LightGray" >
+            <Grid Background="LightGray" Margin="0,-3,0,3" >
+                <Grid.Resources>
+                    <Style BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" TargetType="Button"></Style>
+                </Grid.Resources>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="*"></RowDefinition>
                     <RowDefinition Height="Auto"></RowDefinition>
                 </Grid.RowDefinitions>
-                <ToolBar Background="Lavender"  Grid.Row="0">
-                    <Button x:Name="btn_Start" Content="Start"   Width="75" Click="StartButton_Click" />
-                    <Button x:Name="btn_Stop" Content="Stop"   Width="75" Click="StopButton_Click"/>
+                <StackPanel Orientation="Horizontal" Background="Lavender"  Grid.Row="0"  >
+                    <Button x:Name="btn_Start" Content="Start"   Width="75" Margin="5" Padding="3" Click="StartButton_Click" />
+                    <Button x:Name="btn_Stop" Content="Stop"   Width="75" Margin="5" Padding="3" Click="StopButton_Click"/>
+                    <Button x:Name="btn_Preferences" Content="Настройки"  Margin="5" Padding="3" Click="btn_Preferences_Click" />
                     <Button x:Name="btn_Excel" Content="To Excel"  Width="75" Margin="5" Padding="3" Click="btn_Excel_Click"/>
-                    <Button x:Name="btn_ToMetrical" Content="В метрическую"  Width="87" Margin="0,5" Padding="3" Click="btn_ToMetrical_Click"/>
-                    <Button x:Name="btn_ToImperial" Content="В имперскую"  Width="75" Margin="5" Padding="3" Click="btn_ToImperial_Click"/>
+                    <Button x:Name="btn_ToMetrical" Content="В метрическую"  Width="100" Margin="5" Padding="3" Click="btn_ToMetrical_Click"/>
+                    <Button x:Name="btn_ToImperial" Content="В имперскую"  Width="91" Margin="5" Padding="3" Click="btn_ToImperial_Click"/>
                     <Button x:Name="btn_Help" Content="Помощь"  Margin="5" Padding="3" Click="btn_Help_Click"/>
-                    <Button x:Name="btn_Preferences" Content="Настройки"  Margin="5" Padding="3" Click="btn_Preferences_Click" RenderTransformOrigin="-7.527,0.441" />
-                </ToolBar>
+                </StackPanel>
                 <Grid Grid.Row="1" HorizontalAlignment="Left" Background="Lavender">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"></RowDefinition>
@@ -78,10 +81,6 @@
                     <Button x:Name="btn_Graph_Prefs" Content="Настройки" Margin="3,0,3,3" VerticalAlignment="Bottom" Click="btn_Graph_Prefs_Click" />
                     <Button x:Name="btn_Graph_Save" Content="Сохранить" Margin="3" VerticalAlignment="Top" Click="btn_Graph_Save_Click"  />
                     <Button x:Name="btn_Graph_Open" Content="Открыть" Margin="3" VerticalAlignment="Top" Click="btn_Graph_Open_Click"    />
-                    <Border/>
-                    <Label VerticalAlignment="Center" Visibility="Collapsed" Content="CompareList:" />
-                    <Border/>
-
                 </StackPanel>
 
                 <WindowsFormsHost Grid.Row="1" x:Name ="WinHost" Margin="207,0,0,0" >

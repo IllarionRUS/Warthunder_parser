@@ -4,10 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Data;
-using System.Windows.Media;
 using System.Xml.Serialization;
 using Microsoft.Office.Interop.Excel;
 using WPF_TabletMap;
@@ -16,10 +13,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Action = System.Action;
 using Application = System.Windows.Application;
-using Button = System.Windows.Controls.Button;
-using ListBox = System.Windows.Controls.ListBox;
 using MessageBox = System.Windows.MessageBox;
-using TextBox = System.Windows.Controls.TextBox;
 using Window = System.Windows.Window;
 using WarThunderParser.controls;
 using WarThunderParser.Core;
@@ -132,16 +126,26 @@ namespace WarThunderParser
             m_Manager.OnRecorderFailure += OnRecorderFailure;
         }
 
-        private Graph[] OpenGraph()
+        private SavedState[] Load()
         {
-            var openResult = m_OpenManager.OpenMultiple(_graphfileextensions);
-            if (openResult == null) return null;
-            return openResult.Cast<Graph>().ToArray();
+            try
+            { 
+                var openResult = m_OpenManager.OpenMultiple(_graphfileextensions);
+                if (openResult == null)
+                    return null;
+                return openResult.Cast<SavedState>().ToArray();
+            } 
+            catch (Exception e)
+            {
+                MessageBox.Show("Произошла ошибка! (" + e.Message + ")");
+                return null;
+            }
         }
 
-        private void SaveGraph(Graph toSave)
+        private void Save()
         {
-            m_SaveManager.Save(_graphfileextensions, toSave, toSave.ToString());
+            SavedState state = new SavedState(this);
+            m_SaveManager.Save(_graphfileextensions, state, state.getName());
         }
 
         private void OnHook(HookDemoHelper.HookEventArgs e)
@@ -250,6 +254,8 @@ namespace WarThunderParser
 
         void OnStartNewDataCollecting(FdrManagerEventArgs e)
         {
+            Ordinats.Clear();
+            cb_Abscissa.Items.Clear();
             TableColumns.Clear();
             StatusLabelSecond.Content = "";
             StatusLabelMain.Content = "Идет сбор данных, нажмите Stop или F10 для завершения.";
@@ -257,30 +263,45 @@ namespace WarThunderParser
 
         private void btn_Graph_Save_Click(object sender, RoutedEventArgs e)
         {
-            if (m_DataProcessingHelper == null || m_DataProcessingHelper.Graphs == null || m_DataProcessingHelper.Graphs.Count == 0)
+            if (m_DataProcessingHelper == null || m_DataProcessingHelper.GetCollectedMeasuresNames() == null || m_DataProcessingHelper.GetCollectedMeasuresNames().Count() == 0)
             {
-                MessageBox.Show("Графики не выбраны");
+                MessageBox.Show("Нет данных для сохранения");
             }
             else
             {
-                foreach (Graph graph in m_DataProcessingHelper.Graphs)
-                {
-                    SaveGraph(graph);
-                }
+                Save();
             }            
         }       
 
         private void btn_Graph_Open_Click(object sender, RoutedEventArgs e)
         {
-            var opened = OpenGraph();
+            var opened = Load();
             if (opened == null)
                 return;
-            m_DataProcessingHelper.Clear();
             cb_Abscissa.Items.Clear();
             Ordinats.Clear();
 
-            Array.ForEach(opened, g => m_DataProcessingHelper.Graphs.Add(g));
-            m_DataProcessingHelper.Redraw();
+            m_DataProcessingHelper.loadState(opened[0].Data);
+            foreach (var title in m_DataProcessingHelper.GetCollectedMeasuresNames())
+            {
+                CheckedListItem<string> item = new CheckedListItem<string>() { Item = title };                
+                Ordinats.Add(item);
+                cb_Abscissa.Items.Add(title);
+
+                item = new CheckedListItem<string>() { Item = title };
+                item.PropertyChanged += onTabColumnChecked;
+                TableColumns.Add(item);
+            }
+
+            cb_Abscissa.SelectionChanged -= cb_Abscissa_SelectionChanged;
+
+            cb_Abscissa.SelectedItem = m_DataProcessingHelper.Graphs.First().XAxis;
+            m_DataProcessingHelper.Graphs.Select(g => g.YAxis).ToList().ForEach(y => Ordinats.Where(o => o.Item.Equals(y)).First().IsChecked = true);
+            opened[0].CheckedTables.ForEach(c => TableColumns.Where(t => t.Item.Equals(c)).First().IsChecked = true);
+
+            cb_Abscissa.SelectionChanged += cb_Abscissa_SelectionChanged;
+            Ordinats.ToList().ForEach(o => o.PropertyChanged += onOrdinateChecked);
+
         }
         
         private void btn_Help_Click(object sender, RoutedEventArgs e)
@@ -355,6 +376,25 @@ namespace WarThunderParser
         {
             m_DataProcessingHelper.ConvertToImperial();
         }
+
+        [Serializable]
+        private class SavedState
+        {
+            internal DataProcessingHelper.SavedState Data { get; set; }
+            internal List<string> CheckedTables { get; set; }
+
+            public SavedState(MainWindow parent)
+            {
+                Data = parent.m_DataProcessingHelper.getSavedState();
+                CheckedTables = parent.TableColumns.Where(c => c.IsChecked).Select(c => c.Item).ToList();
+            }
+
+            public string getName()
+            {
+                return Data.getName();
+            }
+        }
+
     }
         
 }

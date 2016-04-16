@@ -115,6 +115,7 @@
       <DependentUpon>CollectSettings.xaml</DependentUpon>
     </Compile>
     <Compile Include="controls\CheckedListItem.cs" />
+    <Compile Include="core\DataProcessingHelper.SaveLoad.cs" />
     <Compile Include="core\DataProcessingHelper.UI.cs" />
     <Compile Include="core\FdrManager.cs" />
     <Compile Include="core\FdrDataAdapter.cs" />
