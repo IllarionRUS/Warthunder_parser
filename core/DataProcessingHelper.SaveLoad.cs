@@ -44,8 +44,7 @@ namespace WarThunderParser.Core
 
             internal string getName()
             {
-                DateTime date = new DateTime();
-                return date.ToShortDateString() + " " + date.ToShortTimeString();
+                return (graphs != null && graphs.Count > 0) ? graphs.First().GraphName : "";
             }
 
         }
