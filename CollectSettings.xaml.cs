@@ -35,6 +35,7 @@ namespace WarThunderParser
             AllowFiltersCheckBox.IsChecked = _collectSettings.AllowInputFilters;
             ExcelSelectionRangeCheckBox.IsChecked = _collectSettings.ExcelSelectedOnly;
             FiltersListBox.ItemsSource = _collectSettings.FilterList;
+            cb_Feets.IsChecked = _collectSettings.AltFeets;
             ShowDialog();
             return _collectSettings;
         }
@@ -129,6 +130,7 @@ namespace WarThunderParser
             _collectSettings.AllowOutlierFilter = OutlierCheckBox.IsChecked.Value;
             _collectSettings.AllowInputFilters = AllowFiltersCheckBox.IsChecked.Value;
             _collectSettings.ExcelSelectedOnly = ExcelSelectionRangeCheckBox.IsChecked.Value;
+            _collectSettings.AltFeets = cb_Feets.IsChecked.Value;
             Close();
         }
 
@@ -159,6 +161,7 @@ namespace WarThunderParser
         public bool ExcelSelectedOnly = false;
         public bool AllowOutlierFilter = true;
         public bool AllowInputFilters = false;
+        public bool AltFeets = false;
         public List<string> FilterList = new List<string>();
         private int _requestInterval = 0;
         private int _interpInterval = 200;
@@ -205,7 +208,8 @@ namespace WarThunderParser
                 FilterList = new List<string>(this.FilterList),
                 _requestInterval = this._requestInterval,
                 _interpInterval = this._interpInterval,
-                _failureDelay = this._failureDelay
+                _failureDelay = this._failureDelay,
+                AltFeets = this.AltFeets
             };
             return resultSettings;
         }

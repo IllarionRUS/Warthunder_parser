@@ -14,6 +14,7 @@ namespace WarThunderParser.Core
             public const string IAS = "IAS";
             public const string Acceleration_TAS = "Acceleration_TAS";
             public const string Acceleration_IAS = "Acceleration_IAS";
+            public const string Altitudes = "altitude";
         }
 
         public static class Unit

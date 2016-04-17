@@ -54,6 +54,13 @@ namespace WarThunderParser.Core
                             approximated[Array.IndexOf(recorder.Names, name)].Select(t => t / 1000).ToList();
                         unit = Consts.Unit.Time_S;
                     }
+                    if (name.ToLower().StartsWith(Consts.Value.Altitudes))
+                    {
+                        if (m_CollectSettings.AltFeets)
+                            unit = Consts.Unit.Alt_I;
+                        else
+                            unit = Consts.Unit.Alt_M;
+                    }
 
                     m_Data.Add(name, approximated[Array.IndexOf(recorder.Names, name)]);
                     m_Units.Add(name, unit);  
