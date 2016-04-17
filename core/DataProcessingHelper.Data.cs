@@ -65,7 +65,7 @@ namespace WarThunderParser.Core
             {
                 var trimmedValues = keyValue.Value;
                 if (trimmedValues.Count > m_DataSize)
-                    trimmedValues.RemoveRange(m_DataSize, keyValue.Value.Count - 1);
+                    trimmedValues.RemoveRange(m_DataSize, keyValue.Value.Count - m_DataSize);
                 trimmedValues.TrimExcess();
             }
         }

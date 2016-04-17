@@ -28,8 +28,7 @@ namespace WarThunderParser
         private bool Started;
         private GraphSettings _graphSettings;
         private CollectSettings _collectSettings;
-        private FlightDataRecorder[] _recorders;
-        private Dictionary<string, string> _traslateDictionary;        
+        private FlightDataRecorder[] _recorders;     
         private Dictionary<string, Saver> _graphfileextensions;
         HookDemoHelper _keyHooker = new HookDemoHelper();
 
@@ -55,13 +54,14 @@ namespace WarThunderParser
             AppDomain.CurrentDomain.UnhandledException += ExceptionHandler;
             _graphSettings = new GraphSettings();
             _collectSettings = new CollectSettings();
-            this.DataContext = this;
+            DataContext = this;
             _keyHooker.SetHook();
             _keyHooker.OnHook += OnHook;
             m_SaveManager = new SaveManager();
             m_OpenManager = new OpenManager();
             _graphfileextensions = new Dictionary<string, Saver> { { "graphics files (*.grph)|*.grph", new BinSaver() } };
                                   
+
             var serializer = new XmlSerializer(typeof(List<string>));
             if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "Filters.xml"))
             {
@@ -82,24 +82,6 @@ namespace WarThunderParser
             pane.XAxis.Title.Text = "";
             pane.YAxis.Title.Text = "";
                         
-            serializer = new XmlSerializer(typeof(string[][]));
-            string[][] openResult=null;
-            _traslateDictionary = new Dictionary<string, string>();
-            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "Translate.xml"))
-            {
-                using (var filestream = new FileStream("Translate.xml", FileMode.Open))
-                {
-                    openResult = (string[][])serializer.Deserialize(filestream);
-                }
-            }
-            if (openResult != null)
-            {
-                foreach (var pair in openResult)
-                {
-                    _traslateDictionary.Add(pair[0],pair[1]);
-                }
-            }
-
             dg_Data.EnableColumnVirtualization = true;
             dg_Data.EnableRowVirtualization = true;
             Ordinats = new ObservableCollection<CheckedListItem<string>>();

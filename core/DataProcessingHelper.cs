@@ -8,7 +8,6 @@ using ZedGraph;
 
 namespace WarThunderParser.Core
 {
-    // TODO full state save; 
     // TODO localization, translates;
     // TODO measures;
     public partial class DataProcessingHelper
