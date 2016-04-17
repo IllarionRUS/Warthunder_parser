@@ -11,6 +11,8 @@ namespace WarThunderParser
     {
         public PointPairList PointPairs { get; set; }
         public string CurveName { get; set; }
+        public string X_Unit { get; set; }
+        public string Y_Unit { get; set; }
         private string _graphName;
         public string GraphName
         {
@@ -29,7 +31,6 @@ namespace WarThunderParser
         public string YAxis { get;  set; }
         readonly Random _rnd = new Random();
         
-
         public LineItem GetLineItem(System.Drawing.Color color, SymbolType symbolType, float lineWidth)
         {
             var result = new LineItem(GraphName, PointPairs, color, symbolType);
@@ -57,7 +58,8 @@ namespace WarThunderParser
         public override bool Equals(object obj)
         {
             var graph2 = obj as Graph;
-            if (graph2 == null) return false;
+            if (graph2 == null)
+                return false;
             for (int i = 0; i < graph2.PointPairs.Count; i++)
             {
                 if ((graph2.PointPairs[i].X != PointPairs[i].X) || (graph2.PointPairs[i].Y != PointPairs[i].Y))
@@ -66,22 +68,29 @@ namespace WarThunderParser
             return true;
         }
 
-        public Graph(PointPairList points, string curveName, string xAxis, string yAxis)
+        public override int GetHashCode()
+        {
+            return PointPairs.GetHashCode();
+        }
+
+        public Graph(PointPairList points, string curveName, string xAxis, string yAxis, string x_unit = null, string y_unit = null)
         {
             XAxis = xAxis;
             YAxis = yAxis;
+            X_Unit = x_unit;
+            Y_Unit = y_unit;
             PointPairs = points;
             CurveName = curveName;
         }
-        public Graph(PointPairList points, string curveName, string graphName, string xAxis, string yAxis)
-            : this(points, curveName, xAxis, yAxis)
+        public Graph(PointPairList points, string curveName, string graphName, string xAxis, string yAxis, string x_unit = null, string y_unit = null)
+            : this(points, curveName, xAxis, yAxis, x_unit, y_unit)
         {
             GraphName = graphName;
         }
 
         public object Clone()
         {
-            return new Graph(PointPairs, CurveName,_graphName, XAxis, YAxis);
+            return new Graph(PointPairs, CurveName,_graphName, XAxis, YAxis, X_Unit, Y_Unit);
         }
     }
 
@@ -99,6 +108,7 @@ namespace WarThunderParser
         }
     }
     public enum SmoothModel{Average, Median}
+
     public class GraphSettings : ICloneable
     {
         private const int MinSmoothPeriod = 0;
@@ -118,12 +128,20 @@ namespace WarThunderParser
                 _smoothPeriod = value;
             }
         }
+        public bool LegendVisible { get; set; }
+        public bool AxisLabelVisible { get; set; }
+        public int AxisFontSize { get; set; }
+        public bool AxisColorAsCurve { get; set; }
 
-    
         public List<CurveLine> CurveLines;
         
         public GraphSettings()
         {
+            LegendVisible = true;
+            AxisLabelVisible = true;
+            AxisFontSize = 10;
+            AxisColorAsCurve = false;
+
             CurveLines = new List<CurveLine>
             {
                 new CurveLine(2.0f, Color.Blue, SymbolType.None),
@@ -146,7 +164,11 @@ namespace WarThunderParser
                 MinorGrid = this.MinorGrid,
                 Smooth = this.Smooth,
                 SmoothPeriod = this.SmoothPeriod,
-                SmoothType = this.SmoothType
+                SmoothType = this.SmoothType,
+                LegendVisible = this.LegendVisible,
+                AxisLabelVisible = this.AxisLabelVisible,
+                AxisFontSize = this.AxisFontSize,
+                AxisColorAsCurve = this.AxisColorAsCurve
             };
             return resultSettings;
         }

@@ -7,6 +7,7 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Threading;
+using WarThunderParser.Core;
 
 namespace WarThunderParser
 {
@@ -18,7 +19,6 @@ namespace WarThunderParser
 
     public class FlightDataRecorder
     {
-        public const string TimeName = "Time";
         //Определяет критический ли рекордер. Сбой критического рекордера вызывает сбой всего сбора данных.
         public bool IsCritical { get; private set; }
         //Максимальное время ожидания до генерации ошибки
@@ -47,7 +47,7 @@ namespace WarThunderParser
         //Возвращает количество значений каждого параметра
         public int ValuesCount
         {
-            get { return _paramsDictionary["Time"].Value.Count; }
+            get { return _paramsDictionary[Consts.Value.Time].Value.Count; }
         }
         //Время начала сбора данных
         public DateTime InitTime { get; private set; }
@@ -128,13 +128,13 @@ namespace WarThunderParser
             //При инициализации
             if (_paramsDictionary.Count==0)
             {
-                _paramsDictionary.Add(TimeName, new ParsedParam {Value = new List<double>(), Unit = "msec"});
+                _paramsDictionary.Add(Consts.Value.Time, new ParsedParam {Value = new List<double>(), Unit = Consts.Unit.Time_Ms});
                 InitTime = mark;
             }
             //Преобразование временной метки в интервал от начала записи и добавление значения в словарь текущих значений.
             //Несмотря на то, что удобнее добавить значение времени в общий словарь напрямую, добавление в текущий словарь реализовано для единообразия 
             //и более удобного сравнения ключей в дальнейшем.
-            curValues.Add(TimeName, new[] { "msec", (mark - InitTime).TotalMilliseconds.ToString(_numFormatInfo) });
+            curValues.Add(Consts.Value.Time, new[] { Consts.Unit.Time_Ms, (mark - InitTime).TotalMilliseconds.ToString(_numFormatInfo) });
            
            
             //Сбор текущих значений всех параметров, кроме времени
@@ -173,7 +173,7 @@ namespace WarThunderParser
                 //Добавляем в словарь текущих значений параметр
                 curValues.Add(name, new[] {unit, textValue});
                 //При инициализации
-                if (_paramsDictionary[TimeName].Value.Count == 0)
+                if (_paramsDictionary[Consts.Value.Time].Value.Count == 0)
                 {
                     var parsedParam = new ParsedParam {Value = new List<double>(), Unit = unit};
                     _paramsDictionary.Add(name, parsedParam);
@@ -196,7 +196,7 @@ namespace WarThunderParser
                 {
                     _paramsDictionary.Add(missingKey,
                         new ParsedParam {Unit = curValues[missingKey][0], Value = new List<double>()});
-                    for (int i = 0; i < _paramsDictionary["Time"].Value.Count - 1; i++)
+                    for (int i = 0; i < _paramsDictionary[Consts.Value.Time].Value.Count - 1; i++)
                     {
                         _paramsDictionary[missingKey].Value.Add(0);
                     }
@@ -276,6 +276,11 @@ namespace WarThunderParser
                 }
             }
             return result;
+        }
+
+        public void Clear()
+        {
+            _paramsDictionary.Clear();
         }
     }
 }

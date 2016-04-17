@@ -158,7 +158,7 @@ namespace WarThunderParser
 
         public bool ExcelSelectedOnly = false;
         public bool AllowOutlierFilter = true;
-        public bool AllowInputFilters = true;
+        public bool AllowInputFilters = false;
         public List<string> FilterList = new List<string>();
         private int _requestInterval = 0;
         private int _interpInterval = 200;

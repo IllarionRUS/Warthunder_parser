@@ -22,38 +22,45 @@ namespace WarThunderParser
     /// </summary>
     public partial class GraphSetupWindow : Window
     {
-        private GraphSettings _graphSettings;
+        private GraphSettings m_GraphSettings;
         private bool _canClose = false;
         public GraphSetupWindow()
         {
             InitializeComponent();
-            SmoothTypeComboBox.ItemsSource = Enum.GetValues(typeof(SmoothModel));
+            cmb_SmoothType.ItemsSource = Enum.GetValues(typeof(SmoothModel));
             DataContext = this;
         }
 
         public GraphSettings ShowSettings(GraphSettings inputSettings)
         {
-            _graphSettings = inputSettings.Clone() as GraphSettings;
-            SmoothGraphCheckBox.IsChecked = _graphSettings.Smooth;
-            SmoothPeriodBox.Text = _graphSettings.SmoothPeriod.ToString();
-            MainGridCheckBox.IsChecked = _graphSettings.MajorGrid;
-            AdditionalGridCheckBox.IsChecked = _graphSettings.MinorGrid;
-            SmoothTypeComboBox.SelectedItem = _graphSettings.SmoothType;
+            m_GraphSettings = inputSettings.Clone() as GraphSettings;
+            cb_Smooth.IsChecked = m_GraphSettings.Smooth;
+            edt_SmoothPeriod.Text = m_GraphSettings.SmoothPeriod.ToString();
+            cb_PrimaryGrid.IsChecked = m_GraphSettings.MajorGrid;
+            cb_AdditionalGrid.IsChecked = m_GraphSettings.MinorGrid;
+            cmb_SmoothType.SelectedItem = m_GraphSettings.SmoothType;
+            cb_ShowLegend.IsChecked = m_GraphSettings.LegendVisible;
+            cb_AxisLabelsVisibility.IsChecked = m_GraphSettings.AxisLabelVisible;
+            cb_AxisCurveColor.IsChecked = m_GraphSettings.AxisColorAsCurve;
+            edt_AxisFontSize.Text = m_GraphSettings.AxisFontSize.ToString();
             ShowDialog();
-            return _graphSettings;
+            return m_GraphSettings;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void btn_Apply_Click(object sender, RoutedEventArgs e)
         {
             _canClose = true;
-            _graphSettings.Smooth = SmoothGraphCheckBox.IsChecked.Value;
-            _graphSettings.MajorGrid = MainGridCheckBox.IsChecked.Value;
-            _graphSettings.MinorGrid = AdditionalGridCheckBox.IsChecked.Value;
-            _graphSettings.SmoothType = (SmoothModel)SmoothTypeComboBox.SelectedItem;
+            m_GraphSettings.Smooth = cb_Smooth.IsChecked.Value;
+            m_GraphSettings.MajorGrid = cb_PrimaryGrid.IsChecked.Value;
+            m_GraphSettings.MinorGrid = cb_AdditionalGrid.IsChecked.Value;
+            m_GraphSettings.SmoothType = (SmoothModel)cmb_SmoothType.SelectedItem;
+            m_GraphSettings.LegendVisible = cb_ShowLegend.IsChecked.Value;
+            m_GraphSettings.AxisLabelVisible = cb_AxisLabelsVisibility.IsChecked.Value;
+            m_GraphSettings.AxisColorAsCurve = cb_AxisCurveColor.IsChecked.Value;
             Close();
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private void btn_Cancel_Click(object sender, RoutedEventArgs e)
         {
             Close();
         }
@@ -62,16 +69,16 @@ namespace WarThunderParser
         {
             if (!_canClose)
             {
-                _graphSettings = null;
+                m_GraphSettings = null;
             }
 
         }
 
-        private void SmoothPeriodBox_LostFocus(object sender, RoutedEventArgs e)
+        private void edt_SmoothPeriod_LostFocus(object sender, RoutedEventArgs e)
         {
             try
             {
-                _graphSettings.SmoothPeriod = int.Parse((sender as TextBox).Text);
+                m_GraphSettings.SmoothPeriod = int.Parse((sender as TextBox).Text);
             }
             catch (FormatException)
             {
@@ -83,7 +90,27 @@ namespace WarThunderParser
             }
             finally
             {
-                (sender as TextBox).Text = _graphSettings.SmoothPeriod.ToString();
+                (sender as TextBox).Text = m_GraphSettings.SmoothPeriod.ToString();
+            }
+        }
+
+        private void edt_AxisFontSize_LostFocus(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                m_GraphSettings.AxisFontSize = int.Parse((sender as TextBox).Text);
+            }
+            catch (FormatException)
+            {
+                MessageBox.Show("Входная строка содержит недопустимые символы!");
+            }
+            catch (ArgumentException exception)
+            {
+                MessageBox.Show(exception.Message);
+            }
+            finally
+            {
+                (sender as TextBox).Text = m_GraphSettings.AxisFontSize.ToString();
             }
         }
     }

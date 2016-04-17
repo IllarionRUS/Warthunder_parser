@@ -60,7 +60,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Office.Interop.Excel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.Office.Interop.Excel.15.0.4795.1000\lib\net20\Microsoft.Office.Interop.Excel.dll</HintPath>
+      <HintPath>packages\Microsoft.Office.Interop.Excel.15.0.4420.1017\lib\net20\Microsoft.Office.Interop.Excel.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="System" />
@@ -89,10 +89,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="AskGraphNameWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="CollectSettings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -109,18 +105,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="core\Consts.cs" />
     <Compile Include="core\DataProcessingHelper.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="AskGraphNameWindow.xaml.cs">
-      <DependentUpon>AskGraphNameWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="CollectSettings.xaml.cs">
       <DependentUpon>CollectSettings.xaml</DependentUpon>
     </Compile>
     <Compile Include="controls\CheckedListItem.cs" />
+    <Compile Include="core\DataProcessingHelper.SaveLoad.cs" />
+    <Compile Include="core\DataProcessingHelper.UI.cs" />
     <Compile Include="core\FdrManager.cs" />
     <Compile Include="core\FdrDataAdapter.cs" />
     <Compile Include="core\FlightDataRecorder.cs" />
@@ -157,7 +153,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Compile Include="core\DataProcessingHelper.Core.cs" />
+    <Compile Include="core\DataProcessingHelper.Data.cs" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Forms;
 using System.Windows.Threading;
+using WarThunderParser.Core;
 using Binding = System.Windows.Data.Binding;
 using CheckBox = System.Windows.Controls.CheckBox;
 using ComboBox = System.Windows.Controls.ComboBox;
@@ -18,6 +19,7 @@ using Label = System.Windows.Controls.Label;
 
 namespace WarThunderParser
 {
+    [Obsolete]
     public class FdrDataAdapter
     {
         const string TimeTranslate = "Время, мс";
@@ -166,7 +168,7 @@ namespace WarThunderParser
             _filterList = filterList;
             _interpInterval = interpTime;
             _translateDictionary = translateDictionary;
-            if (interpTime > _recorders[0].Values(FlightDataRecorder.TimeName).Last())
+            if (interpTime > _recorders[0].Values(Consts.Value.Time).Last())
                 return;
             Initialize(_recorders);
         }
