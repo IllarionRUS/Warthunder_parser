@@ -2,8 +2,9 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local ="clr-namespace:WarThunderParser"
+        xmlns:res="clr-namespace:WarThunderParser.Properties"
         xmlns:drawing ="clr-namespace:System.Drawing;assembly=System.Drawing"
-        Title="Настройки графиков" SizeToContent="WidthAndHeight"  Background="Lavender" Closing="Window_Closing" Height="371.335" ResizeMode="NoResize">
+        Title="{x:Static res:Resources.dlg_GS_Title}" SizeToContent="WidthAndHeight"  Background="Lavender" Closing="Window_Closing" Height="371.335" ResizeMode="NoResize">
     <Window.Resources>
     </Window.Resources>
     <Grid Margin="5,5,5,0" Height="334" VerticalAlignment="Top">
@@ -20,41 +21,38 @@
             <ColumnDefinition Width="Auto"></ColumnDefinition>
             <ColumnDefinition Width="Auto"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <GroupBox Header="Сглаживание" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left">
+        <GroupBox Header="{x:Static res:Resources.dlg_GS_g_Smoothing}" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left">
             <StackPanel>
-                <CheckBox x:Name ="cb_Smooth" IsChecked="True" Content="Использовать" VerticalAlignment="Center" Margin="5"  />
+                <CheckBox x:Name ="cb_Smooth" IsChecked="True" Content="{x:Static res:Resources.dlg_GS_cb_UseSmoothing}" VerticalAlignment="Center" Margin="5"  />
                 <StackPanel Orientation="Horizontal">
-                    <Label Content="Размер выборки, пиксели:" VerticalAlignment="Center"/>
+                    <Label Content="{x:Static res:Resources.dlg_GS_lbl_SmoothLevel}" VerticalAlignment="Center"/>
                     <TextBox Width="70" Text="10" x:Name="edt_SmoothPeriod"  VerticalAlignment="Center" Margin="5" Height="24" 
                              LostFocus="edt_SmoothPeriod_LostFocus"/>
                 </StackPanel>
                 <ComboBox x:Name="cmb_SmoothType" VerticalAlignment="Center" HorizontalAlignment="Left" Width="214" Margin="5"/>
             </StackPanel>
         </GroupBox>
-        <GroupBox Visibility="Collapsed" Header ="Линии" Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" Grid.ColumnSpan="2" Margin="0,0,236,0">
-            <ListBox MinWidth="150" Name ="LinesListBox" ></ListBox>
-        </GroupBox>
-        <GroupBox Header="Сетка" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" Width="236" Grid.RowSpan="2">
+        <GroupBox Header="{x:Static res:Resources.dlg_GS_g_Grid}" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" Width="236" Grid.RowSpan="2">
             <StackPanel>
-                <CheckBox x:Name="cb_PrimaryGrid" Content ="Включить основную" Margin="5"/>
-                <CheckBox x:Name="cb_AdditionalGrid" Content ="Включить дополнительную" Margin="5"/>
+                <CheckBox x:Name="cb_PrimaryGrid" Content ="{x:Static res:Resources.dlg_GS_cb_MainGrid}" Margin="5"/>
+                <CheckBox x:Name="cb_AdditionalGrid" Content ="{x:Static res:Resources.dlg_GS_cb_AddGrid}" Margin="5"/>
             </StackPanel>
         </GroupBox>
-        <GroupBox Grid.ColumnSpan="2" Header="Легенда" HorizontalAlignment="Left" Height="117" Margin="0,4,0,-75" Grid.Row="3" VerticalAlignment="Top" Width="236">
+        <GroupBox Grid.ColumnSpan="2" Header="{x:Static res:Resources.dlg_GS_g_Legend}" HorizontalAlignment="Left" Height="117" Margin="0,4,0,-75" Grid.Row="3" VerticalAlignment="Top" Width="236">
             <StackPanel Margin="0,0,0,-1">
-                <CheckBox x:Name="cb_ShowLegend" Content="Показывать легенду" Margin="5"/>
-                <CheckBox x:Name="cb_AxisLabelsVisibility" Content="Подписи осей" Margin="5"/>
-                <CheckBox x:Name="cb_AxisCurveColor" Content="Оси цвета линий" Margin="5"/>
+                <CheckBox x:Name="cb_ShowLegend" Content="{x:Static res:Resources.dlg_GS_cb_ShowLegend}" Margin="5"/>
+                <CheckBox x:Name="cb_AxisLabelsVisibility" Content="{x:Static res:Resources.dlg_GS_cb_AxisLbl}" Margin="5"/>
+                <CheckBox x:Name="cb_AxisCurveColor" Content="{x:Static res:Resources.dlg_GS_cb_AxisColor}" Margin="5"/>
                 <StackPanel Orientation="Horizontal">
-                    <Label Content="Размер шрифта подписей:" VerticalAlignment="Center"/>
+                    <Label Content="{x:Static res:Resources.dlg_GS_lbl_Font}" VerticalAlignment="Center"/>
                     <TextBox Width="70" Text="24" x:Name="edt_AxisFontSize"  VerticalAlignment="Center" Margin="5" Height="24" 
                              LostFocus="edt_AxisFontSize_LostFocus"/>
                 </StackPanel>
             </StackPanel>
         </GroupBox>
         <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" Grid.Column="1" Grid.Row="3" HorizontalAlignment="Right" Margin="0,121,56,-102" Width="139" >
-            <Button x:Name="btn_Cancel" Content="Отмена"  VerticalAlignment="Bottom" Margin="10" Click="btn_Cancel_Click"></Button>
-            <Button x:Name="btn_Apply" Content="Применить"  VerticalAlignment="Bottom" Margin="10" Click="btn_Apply_Click"></Button>
+            <Button x:Name="btn_Cancel" Content="{x:Static res:Resources.common_cancel}"  VerticalAlignment="Bottom" Margin="10" Click="btn_Cancel_Click"></Button>
+            <Button x:Name="btn_Apply" Content="{x:Static res:Resources.common_apply}"  VerticalAlignment="Bottom" Margin="10" Click="btn_Apply_Click"></Button>
         </StackPanel>
     </Grid>
 </Window>

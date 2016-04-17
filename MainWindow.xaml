@@ -3,8 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:zg="clr-namespace:ZedGraph;assembly=ZedGraph"
         xmlns:local="clr-namespace:WarThunderParser"
+        xmlns:res="clr-namespace:WarThunderParser.Properties"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="WarThunderParser.MainWindow"
-        Title="Сбор параметров" Width="1024" Height="768" Background="Lavender" Icon="_png (1).ico" Closed="Window_Closed" Closing="Window_Closing" >
+        Title="{x:Static res:Resources.Title}" Width="1024" Height="768" Background="Lavender" Icon="_png (1).ico" Closed="Window_Closed" Closing="Window_Closing" >
     <Window.Resources>
         <DataTemplate DataType="{x:Type local:Graph}" x:Key="GraphItemTemplate">
             <TextBox  IsReadOnly="True" Padding="3" IsReadOnlyCaretVisible="False" BorderThickness="0" Text="{Binding Path=GraphName, Mode=TwoWay}" 
@@ -14,7 +15,7 @@
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"></BooleanToVisibilityConverter>
     </Window.Resources>
     <TabControl Background="Lavender">
-        <TabItem x:Name="Tab_Main" Header="Сбор данных">
+        <TabItem x:Name="Tab_Main" Header="{x:Static res:Resources.tab_Data}">
             <Grid Background="LightGray" Margin="0,-3,0,3" >
                 <Grid.Resources>
                     <Style BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" TargetType="Button"></Style>
@@ -25,13 +26,13 @@
                     <RowDefinition Height="Auto"></RowDefinition>
                 </Grid.RowDefinitions>
                 <StackPanel Orientation="Horizontal" Background="Lavender"  Grid.Row="0"  >
-                    <Button x:Name="btn_Start" Content="Start"   Width="75" Margin="5" Padding="3" Click="StartButton_Click" />
-                    <Button x:Name="btn_Stop" Content="Stop"   Width="75" Margin="5" Padding="3" Click="StopButton_Click"/>
-                    <Button x:Name="btn_Preferences" Content="Настройки"  Margin="5" Padding="3" Click="btn_Preferences_Click" />
-                    <Button x:Name="btn_Excel" Content="To Excel"  Width="75" Margin="5" Padding="3" Click="btn_Excel_Click"/>
-                    <Button x:Name="btn_ToMetrical" Content="В метрическую"  Width="100" Margin="5" Padding="3" Click="btn_ToMetrical_Click"/>
-                    <Button x:Name="btn_ToImperial" Content="В имперскую"  Width="91" Margin="5" Padding="3" Click="btn_ToImperial_Click"/>
-                    <Button x:Name="btn_Help" Content="Помощь"  Margin="5" Padding="3" Click="btn_Help_Click"/>
+                    <Button x:Name="btn_Start"  Content="{x:Static res:Resources.btn_Start}"  Width="75" Margin="5" Padding="3" Click="StartButton_Click" />
+                    <Button x:Name="btn_Stop" Content="{x:Static res:Resources.btn_Stop}"   Width="75" Margin="5" Padding="3" Click="StopButton_Click"/>
+                    <Button x:Name="btn_Preferences" Content="{x:Static res:Resources.btn_Preferences}"  Margin="5" Padding="3" Click="btn_Preferences_Click" />
+                    <Button x:Name="btn_Excel" Content="{x:Static res:Resources.btn_Excel}"  Width="75" Margin="5" Padding="3" Click="btn_Excel_Click"/>
+                    <Button x:Name="btn_ToMetrical" Content="{x:Static res:Resources.bnt_ToMetrical}"  Width="100" Margin="5" Padding="3" Click="btn_ToMetrical_Click"/>
+                    <Button x:Name="btn_ToImperial" Content="{x:Static res:Resources.btn_ToImperial}"  Width="91" Margin="5" Padding="3" Click="btn_ToImperial_Click"/>
+                    <Button x:Name="btn_Help" Content="{x:Static res:Resources.btn_Help}"  Margin="5" Padding="3" Click="btn_Help_Click"/>
                 </StackPanel>
                 <Grid Grid.Row="1" HorizontalAlignment="Left" Background="Lavender">
                     <Grid.RowDefinitions>
@@ -42,7 +43,7 @@
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
                         <ColumnDefinition Width="*"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <Label Content="Параметры для отображения:" Height="25" Grid.Row="0" Grid.Column ="0" Margin="0,5,5,0"/>
+                    <Label Content="{x:Static res:Resources.lbl_Params}" Height="25" Grid.Row="0" Grid.Column ="0" Margin="0,5,5,0"/>
                     <ListBox x:Name="lb_Columns" HorizontalAlignment="Left"  Width="202"
                          ItemsSource="{Binding TableColumns}" BorderThickness="2"
                          Grid.Row="1"
@@ -67,7 +68,7 @@
                 </StatusBar>
             </Grid>
         </TabItem>
-        <TabItem x:Name="Tab_Graph"  Header="Графики" Height="20" VerticalAlignment="Top"  >
+        <TabItem x:Name="Tab_Graph"  Header="{x:Static res:Resources.tab_Graph}" Height="20" VerticalAlignment="Top"  >
             <Grid>
                 <Grid.Resources>
                     <Style BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" TargetType="Button"></Style>
@@ -78,9 +79,9 @@
                     <RowDefinition Height="Auto"></RowDefinition>
                 </Grid.RowDefinitions>
                 <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Left" Background="Lavender">
-                    <Button x:Name="btn_Graph_Prefs" Content="Настройки" Margin="3,0,3,3" VerticalAlignment="Bottom" Click="btn_Graph_Prefs_Click" />
-                    <Button x:Name="btn_Graph_Save" Content="Сохранить" Margin="3" VerticalAlignment="Top" Click="btn_Graph_Save_Click"  />
-                    <Button x:Name="btn_Graph_Open" Content="Открыть" Margin="3" VerticalAlignment="Top" Click="btn_Graph_Open_Click"    />
+                    <Button x:Name="btn_Graph_Prefs" Content="{x:Static res:Resources.btn_Preferences}" Margin="3,0,3,3" VerticalAlignment="Bottom" Click="btn_Graph_Prefs_Click" />
+                    <Button x:Name="btn_Graph_Save" Content="{x:Static res:Resources.btn_Save}" Margin="3" VerticalAlignment="Top" Click="btn_Graph_Save_Click"  />
+                    <Button x:Name="btn_Graph_Open" Content="{x:Static res:Resources.btn_Open}" Margin="3" VerticalAlignment="Top" Click="btn_Graph_Open_Click"    />
                 </StackPanel>
 
                 <WindowsFormsHost Grid.Row="1" x:Name ="WinHost" Margin="207,0,0,0" >
@@ -108,10 +109,10 @@
                         </Style>
                     </ListBox.ItemContainerStyle>
                 </ListBox>
-                <Label x:Name="label" Content="Ось ординат:" HorizontalAlignment="Left" Margin="0,25,0,0" Grid.Row="1" VerticalAlignment="Top"/>
+                <Label x:Name="label" Content="{x:Static res:Resources.lbl_Ordinata}" HorizontalAlignment="Left" Margin="0,25,0,0" Grid.Row="1" VerticalAlignment="Top"/>
             </Grid>
         </TabItem>
-        <TabItem x:Name="Tab_Measures" Header="Измерения">
+        <TabItem x:Name="Tab_Measures" Header="{x:Static res:Resources.tab_Measures}">
 
         </TabItem>
     </TabControl>

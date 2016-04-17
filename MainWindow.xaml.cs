@@ -119,7 +119,7 @@ namespace WarThunderParser
             } 
             catch (Exception e)
             {
-                MessageBox.Show("Произошла ошибка! (" + e.Message + ")");
+                MessageBox.Show(Properties.Resources.common_error + " (" + e.Message + ")");
                 return null;
             }
         }
@@ -150,7 +150,7 @@ namespace WarThunderParser
 
             Action onFailureAction = delegate()
             {
-                StatusLabelMain.Content = "Сбор данных завершился с ошибками. Нажмите Start или F9 для начала нового сбора.";
+                StatusLabelMain.Content = Properties.Resources.state_failed;
                 Started = false;
             };
             if (!Started)
@@ -163,7 +163,7 @@ namespace WarThunderParser
         {
             if (!Started)
                 return;
-            StatusLabelSecond.Content = "Сборщик " + e.Recorder.Uri + " прекратил сбор с сообщением: " + e.Reason;
+            StatusLabelSecond.Content = string.Format(Properties.Resources.state_recorder_failed_format, e.Recorder.Uri, e.Reason);
         }
 
         private void StartButton_Click(object sender, RoutedEventArgs e)
@@ -208,7 +208,7 @@ namespace WarThunderParser
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Произошла ошибка! (" + ex.Message + ")");
+                MessageBox.Show(Properties.Resources.common_error + " (" + ex.Message + ")");
             }
         }
                 
@@ -230,7 +230,7 @@ namespace WarThunderParser
                 TableColumns.Add(item);
             }
 
-            StatusLabelMain.Content = "Данные успешно собраны. Нажмите Start или F9 для начала нового сбора.";
+            StatusLabelMain.Content = Properties.Resources.state_success;
             Started = false;
         }
 
@@ -240,14 +240,14 @@ namespace WarThunderParser
             cb_Abscissa.Items.Clear();
             TableColumns.Clear();
             StatusLabelSecond.Content = "";
-            StatusLabelMain.Content = "Идет сбор данных, нажмите Stop или F10 для завершения.";
+            StatusLabelMain.Content = Properties.Resources.state_collecting;
         }
 
         private void btn_Graph_Save_Click(object sender, RoutedEventArgs e)
         {
             if (m_DataProcessingHelper == null || m_DataProcessingHelper.GetCollectedMeasuresNames() == null || m_DataProcessingHelper.GetCollectedMeasuresNames().Count() == 0)
             {
-                MessageBox.Show("Нет данных для сохранения");
+                MessageBox.Show(Properties.Resources.save_error);
             }
             else
             {
