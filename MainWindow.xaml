@@ -109,11 +109,15 @@
                         </Style>
                     </ListBox.ItemContainerStyle>
                 </ListBox>
-                <Label x:Name="label" Content="{x:Static res:Resources.lbl_Ordinata}" HorizontalAlignment="Left" Margin="0,25,0,0" Grid.Row="1" VerticalAlignment="Top"/>
+                <Label x:Name="lbl_Ordinata" Content="{x:Static res:Resources.lbl_Ordinata}" HorizontalAlignment="Left" Margin="0,25,0,0" Grid.Row="1" VerticalAlignment="Top"/>
             </Grid>
         </TabItem>
         <TabItem x:Name="Tab_Measures" Header="{x:Static res:Resources.tab_Measures}">
 
         </TabItem>
+        <TabItem x:Name="Tab_Compare"  Header="{x:Static res:Resources.tab_Compare}" Height="20" VerticalAlignment="Top"  >
+
+        </TabItem>
+
     </TabControl>
 </Window>

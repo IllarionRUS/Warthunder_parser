@@ -196,7 +196,7 @@
     <value>Additional grid on</value>
   </data>
   <data name="dlg_GS_cb_AxisColor" xml:space="preserve">
-    <value>Axis color is same as curves</value>
+    <value>Axis colors are same as curves</value>
   </data>
   <data name="dlg_GS_cb_MainGrid" xml:space="preserve">
     <value>Main grid on</value>
@@ -287,5 +287,14 @@ Setting axis is available only after data was collected. To build graphs select 
   </data>
   <data name="dlg_GS_g_Legend" xml:space="preserve">
     <value>Legend</value>
+  </data>
+  <data name="btn_Compare_Add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="btn_Compare_Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="tab_Compare" xml:space="preserve">
+    <value>Compare</value>
   </data>
 </root>

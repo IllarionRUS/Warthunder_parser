@@ -291,4 +291,13 @@ http://127.0.0.1:8111/indicators и http://127.0.0.1:8111/state. Сохране�
   <data name="dlg_GS_lbl_SmoothLevel" xml:space="preserve">
     <value>Размер выборки, пиксели:</value>
   </data>
+  <data name="btn_Compare_Add" xml:space="preserve">
+    <value>Добавить</value>
+  </data>
+  <data name="btn_Compare_Remove" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="tab_Compare" xml:space="preserve">
+    <value>Сравнить</value>
+  </data>
 </root>

@@ -66,6 +66,12 @@ namespace WarThunderParser.Core
                     m_Units.Add(name, unit);  
                 }
             }
+            if (m_Data.Count == 0)
+            {
+                m_DataSize = 0;
+                return;
+            }
+
             CalcAcceleration();
 
             foreach (var keyValue in m_Data)
