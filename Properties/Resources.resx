@@ -297,4 +297,7 @@ Setting axis is available only after data was collected. To build graphs select 
   <data name="tab_Compare" xml:space="preserve">
     <value>Compare</value>
   </data>
+  <data name="lbl_Compare_Sources" xml:space="preserve">
+    <value>Sources:</value>
+  </data>
 </root>

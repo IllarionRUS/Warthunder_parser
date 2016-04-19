@@ -116,7 +116,55 @@
 
         </TabItem>
         <TabItem x:Name="Tab_Compare"  Header="{x:Static res:Resources.tab_Compare}" Height="20" VerticalAlignment="Top"  >
+            <Grid>
+                <Grid.Resources>
+                    <Style BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" TargetType="Button"></Style>
+                </Grid.Resources>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>               
+                <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Left" Background="Lavender">
+                    <Button x:Name="btn_Compare_Add" Content="{x:Static res:Resources.btn_Compare_Add}" Margin="3,0,3,3" VerticalAlignment="Bottom" />
+                    <Button x:Name="btn_Compare_Remove" Content="{x:Static res:Resources.btn_Compare_Remove}" Margin="3" VerticalAlignment="Top" />
+                </StackPanel>
 
+                <WindowsFormsHost Grid.Row="1" x:Name ="wh_Compare" Margin="207,0,0,0" >
+                    <zg:ZedGraphControl Name="gc_Compare" Dock="Fill" IsShowPointValues="True"/>
+                </WindowsFormsHost>
+
+                <Label x:Name="sds" Content="{x:Static res:Resources.lbl_Compare_Sources}" HorizontalAlignment="Left" Grid.Row="1" VerticalAlignment="Top" RenderTransformOrigin="0.769,0.696"/>
+                <ListBox x:Name="lb_Compare_Sources" HorizontalAlignment="Left" Margin="0,23,0,458" Grid.Row="1" Width="202"
+                         ItemsSource="{Binding Ordinats}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding IsChecked}" Content="{Binding Item}"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="{x:Type ListBoxItem}">
+                            <Setter Property="Focusable" Value="False"/>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
+                <Label Content="{x:Static res:Resources.lbl_Ordinata}" HorizontalAlignment="Left" Margin="0,230,0,0" Grid.Row="1" VerticalAlignment="Top"/>
+                <ComboBox x:Name="cb_Compare_Abscissa" HorizontalAlignment="Left" Margin="0,258,0,0" Grid.Row="1" VerticalAlignment="Top" Width="202"                         
+                          />
+                <ListBox x:Name="lb_Compare_Measures" HorizontalAlignment="Left" Margin="0,284,0,0" Grid.Row="1" Width="202"
+                         ItemsSource="{Binding Ordinats}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding IsChecked}" Content="{Binding Item}"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="{x:Type ListBoxItem}">
+                            <Setter Property="Focusable" Value="False"/>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
+            </Grid>
         </TabItem>
 
     </TabControl>

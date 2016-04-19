@@ -105,6 +105,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="core\CompareHelper.cs" />
     <Compile Include="core\Consts.cs" />
     <Compile Include="core\DataProcessingHelper.cs" />
     <Compile Include="App.xaml.cs">
