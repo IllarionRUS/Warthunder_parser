@@ -303,4 +303,7 @@ http://127.0.0.1:8111/indicators и http://127.0.0.1:8111/state. Сохране�
   <data name="lbl_Compare_Sources" xml:space="preserve">
     <value>Источники данных:</value>
   </data>
+  <data name="lbl_Abscissa" xml:space="preserve">
+    <value>Ось абсцисс:</value>
+  </data>
 </root>

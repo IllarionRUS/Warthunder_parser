@@ -428,6 +428,15 @@ namespace WarThunderParser.Properties {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на X-Axis:.
+        /// </summary>
+        public static string lbl_Abscissa {
+            get {
+                return ResourceManager.GetString("lbl_Abscissa", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Sources:.
         /// </summary>
         public static string lbl_Compare_Sources {
