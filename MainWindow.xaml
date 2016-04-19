@@ -136,7 +136,10 @@
                 </WindowsFormsHost>
 
                 <Label Content="{x:Static res:Resources.lbl_Compare_Sources}" HorizontalAlignment="Left" Grid.Row="1" VerticalAlignment="Top" RenderTransformOrigin="0.769,0.696"/>
-                <ListBox x:Name="lb_Compare_Sources" HorizontalAlignment="Left" Margin="0,23,0,458" Grid.Row="1" Width="202"
+                <ListBox x:Name="lb_Compare_Sources" 
+                         HorizontalAlignment="Left" VerticalAlignment="Top"
+                         Margin="0,23,0,0" Grid.Row="1" 
+                         Width="202" Height="200"
                          ItemsSource="{Binding Ordinats}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
