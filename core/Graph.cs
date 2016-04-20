@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Office.Interop.Excel;
 using ZedGraph;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 
 namespace WarThunderParser
 {
@@ -13,6 +14,8 @@ namespace WarThunderParser
         public string CurveName { get; set; }
         public string X_Unit { get; set; }
         public string Y_Unit { get; set; }
+        public DashStyle DashStyle { get; set; }
+        public Color Color { get; set; }
         private string _graphName;
         public string GraphName
         {
@@ -31,10 +34,15 @@ namespace WarThunderParser
         public string YAxis { get;  set; }
         readonly Random _rnd = new Random();
         
-        public LineItem GetLineItem(System.Drawing.Color color, SymbolType symbolType, float lineWidth)
+        public LineItem GetLineItem(Color color, SymbolType symbolType, float lineWidth)
         {
             var result = new LineItem(GraphName, PointPairs, color, symbolType);
             result.Line.Width = lineWidth;
+            if (DashStyle > 0)
+            {
+                result.Line.DashOn = 4f;
+                result.Line.Style = DashStyle;
+            }
             return result;
         }
         public LineItem GetLineItem()
@@ -47,6 +55,14 @@ namespace WarThunderParser
             var color = System.Drawing.Color.FromArgb(_rnd.Next(256), _rnd.Next(256), _rnd.Next(256));
             var result = new LineItem(ToString(), PointPairs, color, SymbolType.None);
             result.Line.Width = lineWidth;
+            if (DashStyle > 0)
+            {
+                result.Line.DashOn = 4f;
+                result.Line.Style = DashStyle;
+            }
+            if (Color != null)
+                result.Color = Color;
+                
             return result;
         }
 
@@ -90,7 +106,10 @@ namespace WarThunderParser
 
         public object Clone()
         {
-            return new Graph(PointPairs, CurveName,_graphName, XAxis, YAxis, X_Unit, Y_Unit);
+            var result = new Graph(PointPairs, CurveName,_graphName, XAxis, YAxis, X_Unit, Y_Unit);
+            result.DashStyle = DashStyle;
+            result.Color = Color;
+            return result;
         }
     }
 
