@@ -10,7 +10,7 @@ using System.Xml.Serialization;
 using Microsoft.Win32;
 using System.IO;
 
-namespace WPF_TabletMap
+namespace WarThunderParser.Utils
 {
     public class SaveEventArgs : EventArgs
     {

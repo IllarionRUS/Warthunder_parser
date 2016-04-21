@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace WarThunderParser
+namespace WarThunderParser.Utils
 {
     internal class HookDemoHelper
     {

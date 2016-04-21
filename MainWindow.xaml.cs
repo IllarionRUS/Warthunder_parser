@@ -7,7 +7,6 @@ using System.Linq;
 using System.Windows;
 using System.Xml.Serialization;
 using Microsoft.Office.Interop.Excel;
-using WPF_TabletMap;
 using ZedGraph;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -17,6 +16,7 @@ using MessageBox = System.Windows.MessageBox;
 using Window = System.Windows.Window;
 using WarThunderParser.Controls;
 using WarThunderParser.Core;
+using WarThunderParser.Utils;
 
 namespace WarThunderParser
 {
@@ -262,6 +262,7 @@ namespace WarThunderParser
                 return;
             cb_Abscissa.Items.Clear();
             Ordinats.Clear();
+            TableColumns.Clear();
 
             m_DataProcessingHelper.loadState(opened[0].Data);
             foreach (var title in m_DataProcessingHelper.GetCollectedMeasuresNames())

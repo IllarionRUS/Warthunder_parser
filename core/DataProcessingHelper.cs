@@ -4,12 +4,12 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Windows.Controls;
+using WarThunderParser.Utils;
 using ZedGraph;
 
 namespace WarThunderParser.Core
 {
-    // TODO localization, translates;
-    // TODO measures;
+    // TODO translates, measures;
     public partial class DataProcessingHelper
     {
         public List<Graph> Graphs { get; private set; }
@@ -56,8 +56,8 @@ namespace WarThunderParser.Core
             RecordersManager = mngr;
 
             Graphs = new List<Graph>();
-            m_MetricalConverter = new ImperialToMetrical(this);
-            m_ImperialConverter = new MetricalToImperial(this);
+            m_Metrical2ImperialConverter = new MetricalToImperialConverter();
+            m_Imperial2MetricalConverter = new ImperialToMetricalConverter();
 
             RecordersManager.OnDataCollected += onDataCollected;
             RecordersManager.OnStartDataCollecting += onStartDataCollecting;

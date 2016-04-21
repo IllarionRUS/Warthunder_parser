@@ -303,4 +303,7 @@ Setting axis is available only after data was collected. To build graphs select 
   <data name="lbl_Abscissa" xml:space="preserve">
     <value>X-Axis:</value>
   </data>
+  <data name="default_plot_title" xml:space="preserve">
+    <value>Plot</value>
+  </data>
 </root>

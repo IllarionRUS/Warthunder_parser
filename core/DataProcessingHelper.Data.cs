@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using WarThunderParser.Utils;
 
 namespace WarThunderParser.Core
 {
@@ -14,8 +15,8 @@ namespace WarThunderParser.Core
         // for proper recalcs on collectSettings change
         private DateTime? m_SynchTime;
 
-        private ImperialToMetrical m_MetricalConverter;
-        private MetricalToImperial m_ImperialConverter;
+        private MetricalToImperialConverter m_Metrical2ImperialConverter;
+        private ImperialToMetricalConverter m_Imperial2MetricalConverter;
 
         private void CollectData()
         {
@@ -119,12 +120,12 @@ namespace WarThunderParser.Core
 
         public void ConvertToMetrical()
         {
-            m_MetricalConverter.Convert();
+            Convert(m_Imperial2MetricalConverter);
         }
 
         public void ConvertToImperial()
         {
-            m_ImperialConverter.Convert();
+            Convert(m_Metrical2ImperialConverter);
         }
 
         public string[] GetCollectedMeasuresNames()
@@ -134,6 +135,43 @@ namespace WarThunderParser.Core
                 : m_Data.Keys.ToArray();
         }
 
+        private void Convert(UnitConverter converter)
+        {
+            var toConvert = m_Data.Where(d => Array.IndexOf(converter.getConvertableUnits(), m_Units[d.Key]) >= 0).ToArray();
+
+            foreach (var keyValue in toConvert)
+            {
+                string newUnit = converter.Convert(m_Data[keyValue.Key], m_Units[keyValue.Key]);
+                
+                var toUpdateX = Graphs.Where(graph => graph.XAxis != null && string.Equals(graph.XAxis, keyValue.Key));
+                var toUpdateY = Graphs.Where(graph => graph.YAxis != null && string.Equals(graph.YAxis, keyValue.Key));
+                foreach (Graph graph in toUpdateX)
+                {
+                    graph.X_Unit = newUnit;
+                    for (int i = 0; i < m_DataSize; i++)
+                        graph.PointPairs[i].X = m_Data[keyValue.Key][i];
+                }
+                foreach (Graph graph in toUpdateY)
+                {
+                    graph.Y_Unit = newUnit;
+                    for (int i = 0; i < m_DataSize; i++)
+                        graph.PointPairs[i].Y = m_Data[keyValue.Key][i];
+                }
+
+                m_Units[keyValue.Key] = newUnit;
+            }
+
+            Redraw();
+            var visibleColumns = DataGrid.Columns
+                .Where(c => c.Visibility == System.Windows.Visibility.Visible)
+                .Select(s => s.Header.ToString().Split(",".ToCharArray())[0])
+                .ToList();
+            UpdateDataGrid();
+            foreach (var columnName in visibleColumns)
+                ShowColumn(columnName);
+        }
+
+        /*
         private abstract class UnitConverter
         {
             private DataProcessingHelper processingHelper;
@@ -260,6 +298,6 @@ namespace WarThunderParser.Core
                 return new KeyValuePair<string, double>(newUnit, factor);
             }
         }
-
+        */
     }
 }

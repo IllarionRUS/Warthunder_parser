@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Controls;
 using WarThunderParser.Controls;
+using WarThunderParser.Utils;
 using ZedGraph;
 
 namespace WarThunderParser.Core
@@ -37,7 +38,7 @@ namespace WarThunderParser.Core
     public class CompareHelper
     {
         private const int MAX_ORDINATES = 5; //because 5 default line styles
-        private const string DEFAULT_NAME = "plot";        
+        private readonly string DEFAULT_NAME = Properties.Resources.default_plot_title;        
 
         private List<Graph> m_Graphs;
         private GraphSettings m_GraphSettings;
@@ -46,6 +47,9 @@ namespace WarThunderParser.Core
         private Metrica m_Metrica;
         private Dictionary<string, int> m_Dimensions;
         private ObservableCollection<CheckedListItem<string>> m_AvailableOrdinates,  m_AvailableSources;
+
+        private ImperialToMetricalConverter m_Imperical2MetricalConverter;
+        private MetricalToImperialConverter m_Metrical2ImperialConverter;
 
         public ZedGraphControl GraphControl { get; set; }
         public GraphSettings GraphSettings
@@ -68,7 +72,7 @@ namespace WarThunderParser.Core
         {
             set
             {
-                value.ItemsSource = m_ValuesNames;
+                value.ItemsSource = m_Dimensions;
             }
         }
         public ComboBox CbAbscissa { get; set; }
@@ -77,11 +81,15 @@ namespace WarThunderParser.Core
         {
             m_Metrica = Metrica.Metric;
             m_Graphs = new List<Graph>();
+            m_Dimensions = new Dictionary<string, int>();
             m_Sources = new ObservableCollection<CompareSource>();
             m_Sources.CollectionChanged += OnSourcesChanged;
 
             m_AvailableOrdinates = new ObservableCollection<CheckedListItem<string>>();
             m_AvailableSources = new ObservableCollection<CheckedListItem<string>>();
+
+            m_Imperical2MetricalConverter = new ImperialToMetricalConverter();
+            m_Metrical2ImperialConverter = new MetricalToImperialConverter();
         }
 
         private void OnSourcesChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -164,10 +172,30 @@ namespace WarThunderParser.Core
         }
 
         public void SetMetrica(Metrica metrica)
-        {
+        {            
             if (m_Metrica != metrica)
             {
-                //todo
+                UnitConverter converter = null;
+                switch (metrica)
+                {
+                    case Metrica.Metric:
+                        converter = m_Imperical2MetricalConverter;
+                        break;
+                    case Metrica.Imperial:
+                        converter = m_Metrical2ImperialConverter;
+                        break;
+                    default:
+                        throw new InvalidOperationException("convert error");
+                }
+
+                foreach (var source in m_Sources)
+                {
+                    var toConvert = source.getValues().Where(v => Array.IndexOf(converter.getConvertableUnits(), source.getUnits()[v.Key]) >= 0).ToArray();
+                    foreach (var keyValue in toConvert)
+                    {
+                        //todo
+                    }
+                }
                 m_Metrica = metrica;
                 Redraw();
             }

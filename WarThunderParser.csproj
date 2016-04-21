@@ -89,6 +89,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="utils\UnitConverter.cs" />
     <Page Include="CollectSettings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -141,6 +142,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="core\MovingAverage.cs" />
+    <Compile Include="utils\ImperialToMetricalConverter.cs" />
+    <Compile Include="utils\MetricalToImperialConverter.cs" />
     <Compile Include="utils\OpenSaveManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

@@ -196,6 +196,15 @@ namespace WarThunderParser.Properties {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Plot.
+        /// </summary>
+        public static string default_plot_title {
+            get {
+                return ResourceManager.GetString("default_plot_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Add.
         /// </summary>
         public static string dlg_CS_btn_Add {

@@ -306,4 +306,7 @@ http://127.0.0.1:8111/indicators и http://127.0.0.1:8111/state. Сохране�
   <data name="lbl_Abscissa" xml:space="preserve">
     <value>Ось абсцисс:</value>
   </data>
+  <data name="default_plot_title" xml:space="preserve">
+    <value>График</value>
+  </data>
 </root>
