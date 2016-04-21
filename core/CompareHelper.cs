@@ -4,26 +4,23 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
+using System.Windows.Controls;
+using WarThunderParser.Controls;
 using ZedGraph;
 
 namespace WarThunderParser.Core
 {
     public struct CompareSource
     {
-        private string m_Title;
+        internal string Title { get; set; }
         private Dictionary<string, List<double>> m_Values;
         private Dictionary<string, string> m_Units;
 
         public CompareSource(string title, Dictionary<string, List<double>> values, Dictionary<string, string> units)
         {
-            m_Title = title;
+            Title = title;
             m_Values = values;
             m_Units = units;
-        }
-
-        internal string getTitle()
-        {
-            return m_Title;
         }
 
         internal Dictionary<string, List<double>> getValues()
@@ -40,12 +37,15 @@ namespace WarThunderParser.Core
     public class CompareHelper
     {
         private const int MAX_ORDINATES = 5; //because 5 default line styles
+        private const string DEFAULT_NAME = "plot";        
 
         private List<Graph> m_Graphs;
         private GraphSettings m_GraphSettings;
         private ObservableCollection<CompareSource> m_Sources;
 
-        private string m_Abs;
+        private Metrica m_Metrica;
+        private Dictionary<string, int> m_Dimensions;
+        private ObservableCollection<CheckedListItem<string>> m_AvailableOrdinates,  m_AvailableSources;
 
         public ZedGraphControl GraphControl { get; set; }
         public GraphSettings GraphSettings
@@ -57,30 +57,123 @@ namespace WarThunderParser.Core
                 Redraw();
             }
         }
+        public ListBox LbSources
+        {
+            set
+            {
+                value.ItemsSource = m_AvailableSources;
+            }
+        }
+        public ListBox LbOdinates
+        {
+            set
+            {
+                value.ItemsSource = m_ValuesNames;
+            }
+        }
+        public ComboBox CbAbscissa { get; set; }
 
         public CompareHelper()
         {
+            m_Metrica = Metrica.Metric;
             m_Graphs = new List<Graph>();
             m_Sources = new ObservableCollection<CompareSource>();
             m_Sources.CollectionChanged += OnSourcesChanged;
+
+            m_AvailableOrdinates = new ObservableCollection<CheckedListItem<string>>();
+            m_AvailableSources = new ObservableCollection<CheckedListItem<string>>();
         }
 
         private void OnSourcesChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            //todo synchronize time, axis, and units
+            //todo source.name must be unique
+            //todo synchronize axis and units
 
-            foreach (var newItem in e.NewItems)
+            ObservableCollection<CompareSource> obsSender = sender as ObservableCollection<CompareSource>;
+
+            if (e.Action == NotifyCollectionChangedAction.Add)
             {
+                foreach (var newItem in e.NewItems)
+                {
+                    var newSource = (CompareSource)newItem;
 
-            }
+                    int titleNum = 1;
+                    if (string.IsNullOrEmpty(newSource.Title.Trim()))
+                        newSource.Title = DEFAULT_NAME;
+                    while (m_Sources.Where(s => s.Title.Equals(newSource.Title)).Count() > 0)
+                        newSource.Title = newSource.Title + titleNum++;
 
-            foreach(var editedOrRemovedItem in e.OldItems)
+                    newSource.getValues().Keys.ToList().ForEach(
+                        k =>
+                        {
+                            if (m_Dimensions.ContainsKey(k))
+                                m_Dimensions[k]++;
+                            else
+                            {
+                                m_Dimensions.Add(k, 1);
+                                m_AvailableOrdinates.Add(new CheckedListItem<string>(k));
+                                CbAbscissa.Items.Add(k);
+                            }
+                        });
+
+                    switch (m_Metrica)
+                    {
+                        case Metrica.Metric:
+                            // todo
+                            break;
+                        case Metrica.Imperial:
+                            // todo
+                            break;
+                        default:
+                            throw new InvalidOperationException("invalid metrica");
+                    }
+                    m_AvailableSources.Add(new CheckedListItem<string>(newSource.Title));
+                }
+            }                
+            else if (e.Action == NotifyCollectionChangedAction.Remove)
             {
+                foreach (var removedItem in e.OldItems)
+                {
+                    var removedSource = (CompareSource)removedItem;
+                    
+                    foreach(string dimension in removedSource.getValues().Keys.ToList())
+                    {
+                        int count = m_Dimensions[dimension];
+                        if (count == 1)
+                        {
+                            m_Dimensions.Remove(dimension);
+                            CbAbscissa.Items.Remove(dimension);
 
+                            var ordinatesToRemove = m_AvailableOrdinates.Where(o => o.Item.Equals(dimension));
+                            foreach (var item in ordinatesToRemove)
+                                m_AvailableOrdinates.Remove(item);
+                        }
+                        else
+                            m_Dimensions[dimension]--;
+                    }
+
+                    m_Graphs.RemoveAll(g => g.GraphName.Equals(removedSource.Title + "_" + g.YAxis + "(" + g.XAxis + ")"));
+
+                    var toRemove = m_AvailableSources.Where(s => s.Item.Equals(removedSource.Title));
+                    foreach (var item in toRemove)
+                        m_AvailableSources.Remove(item);                   
+                }
+                Redraw();
             }
-            Redraw();
+                            
         }
 
+        public void SetMetrica(Metrica metrica)
+        {
+            if (m_Metrica != metrica)
+            {
+                //todo
+                m_Metrica = metrica;
+                Redraw();
+            }
+        }
+
+        #region UI
         private void BuildGraph(string x, string y)
         {
             var validSources = m_Sources.Where(s => (string.IsNullOrWhiteSpace(x) || s.getValues().ContainsKey(x)) && s.getValues().ContainsKey(y));
@@ -91,6 +184,7 @@ namespace WarThunderParser.Core
             int i = 0;
             foreach (var source in validSources)
             {
+                var title = source.Title;
                 var x_values = source.getValues()[x].ToArray();
                 var y_values = source.getValues()[y].ToArray();
                 // x.Length == y.Length implies from data catching procedure
@@ -101,13 +195,13 @@ namespace WarThunderParser.Core
                 if (string.IsNullOrWhiteSpace(x))
                 {
                     var points = new PointPairList(new double[dataSize], y_values);
-                    graph = new Graph(points, y + "(" + x + ")", x, y, null, source.getUnits()[y]);
+                    graph = new Graph(points, title + "_" + y + "(" + x + ")", x, y, null, source.getUnits()[y]);
                     
                 }
                 else
                 {
                     var points = new PointPairList(x_values, y_values);
-                    graph = new Graph(points, y + "(" + x + ")", x, y, source.getUnits()[x], source.getUnits()[y]);
+                    graph = new Graph(points, title + "_" + y + "(" + x + ")", x, y, source.getUnits()[x], source.getUnits()[y]);
                 }
 
                 graph.Color = color;
@@ -132,7 +226,7 @@ namespace WarThunderParser.Core
         {
 
         }
-
+                
         private void Redraw()
         {
 
@@ -142,6 +236,10 @@ namespace WarThunderParser.Core
         {
             m_Graphs.Clear();
         }
+        #endregion
+
+        #region collections events
+        #endregion
 
     }
 }

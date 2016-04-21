@@ -5,6 +5,12 @@ using System.Text;
 
 namespace WarThunderParser.Core
 {
+    public enum Metrica
+    {
+        Metric,
+        Imperial
+    }
+
     public class Consts
     {
         public static class Value

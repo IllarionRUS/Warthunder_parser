@@ -15,7 +15,7 @@ using Action = System.Action;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
 using Window = System.Windows.Window;
-using WarThunderParser.controls;
+using WarThunderParser.Controls;
 using WarThunderParser.Core;
 
 namespace WarThunderParser
