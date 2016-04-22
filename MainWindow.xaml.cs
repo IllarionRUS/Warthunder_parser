@@ -30,12 +30,13 @@ namespace WarThunderParser
         private CollectSettings _collectSettings;
         private FlightDataRecorder[] _recorders;     
         private Dictionary<string, Saver> _graphfileextensions;
-        HookDemoHelper _keyHooker = new HookDemoHelper();
+        private HookDemoHelper _keyHooker = new HookDemoHelper();
 
         public ObservableCollection<CheckedListItem<string>> TableColumns { get; set; }
         public ObservableCollection<CheckedListItem<string>> Ordinats { get; set; }
         private FdrManager m_Manager;
         private DataProcessingHelper m_DataProcessingHelper;
+        private CompareHelper m_CompareHelper;
 
         private SaveManager m_SaveManager;
         private OpenManager m_OpenManager;
