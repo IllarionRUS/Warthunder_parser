@@ -10,7 +10,7 @@ using System.Xml.Serialization;
 using Microsoft.Win32;
 using System.IO;
 
-namespace WPF_TabletMap
+namespace WarThunderParser.Utils
 {
     public class SaveEventArgs : EventArgs
     {
@@ -166,7 +166,7 @@ namespace WPF_TabletMap
             }
             return null;
         }
-        public object[] OpenMultiple(Dictionary<string, Saver> extensions)
+        public Dictionary<string, object> OpenMultiple(Dictionary<string, Saver> extensions)
         {
             if (extensions.Count == 0)
             {
@@ -183,12 +183,13 @@ namespace WPF_TabletMap
             
             if (result == true)
             {
-                List<object> resultArray = new List<object>();
+                Dictionary<string, object> resultDictionary = new Dictionary<string, object>();
                 foreach (var fileName in dlg.FileNames)
                 {
-                    resultArray.Add(extensions[keys[dlg.FilterIndex - 1]].Open(fileName));
+                    string fn = Path.GetFileNameWithoutExtension(fileName);
+                    resultDictionary.Add(fn, extensions[keys[dlg.FilterIndex - 1]].Open(fileName));
                 }
-                return resultArray.ToArray();
+                return resultDictionary;
             }
             return null;
         }

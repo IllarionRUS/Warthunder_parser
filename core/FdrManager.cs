@@ -50,7 +50,7 @@ namespace WarThunderParser
         {
             if (e.Recorder.IsCritical)
             {
-                if (OnTotalFailure!=null) OnTotalFailure(new FdrManagerEventArgs("Сбой критического сборщика данных"));
+                if (OnTotalFailure!=null) OnTotalFailure(new FdrManagerEventArgs(Properties.Resources.critical_recorder_error));
                 State = ManagerState.Failure;
                 _finishedRecorders.Clear();
             }
@@ -98,7 +98,7 @@ namespace WarThunderParser
 
                 if (flightDataRecorder.IsCritical)
                 {
-                    OnTotalFailure(new FdrManagerEventArgs("Не удалось собрать данные."));
+                    OnTotalFailure(new FdrManagerEventArgs(Properties.Resources.recorder_failed));
                     return;
                 }
                 else

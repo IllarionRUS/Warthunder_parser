@@ -3,8 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:zg="clr-namespace:ZedGraph;assembly=ZedGraph"
         xmlns:local="clr-namespace:WarThunderParser"
+        xmlns:res="clr-namespace:WarThunderParser.Properties"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="WarThunderParser.MainWindow"
-        Title="Сбор параметров" Width="1024" Height="768" Background="Lavender" Icon="_png (1).ico" Closed="Window_Closed" Closing="Window_Closing" >
+        Title="{x:Static res:Resources.Title}" Width="1024" Height="768" Background="Lavender" Icon="_png (1).ico" Closed="Window_Closed" Closing="Window_Closing" >
     <Window.Resources>
         <DataTemplate DataType="{x:Type local:Graph}" x:Key="GraphItemTemplate">
             <TextBox  IsReadOnly="True" Padding="3" IsReadOnlyCaretVisible="False" BorderThickness="0" Text="{Binding Path=GraphName, Mode=TwoWay}" 
@@ -14,7 +15,7 @@
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"></BooleanToVisibilityConverter>
     </Window.Resources>
     <TabControl Background="Lavender">
-        <TabItem x:Name="Tab_Main" Header="Сбор данных">
+        <TabItem x:Name="Tab_Main" Header="{x:Static res:Resources.tab_Data}">
             <Grid Background="LightGray" Margin="0,-3,0,3" >
                 <Grid.Resources>
                     <Style BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" TargetType="Button"></Style>
@@ -25,13 +26,13 @@
                     <RowDefinition Height="Auto"></RowDefinition>
                 </Grid.RowDefinitions>
                 <StackPanel Orientation="Horizontal" Background="Lavender"  Grid.Row="0"  >
-                    <Button x:Name="btn_Start" Content="Start"   Width="75" Margin="5" Padding="3" Click="StartButton_Click" />
-                    <Button x:Name="btn_Stop" Content="Stop"   Width="75" Margin="5" Padding="3" Click="StopButton_Click"/>
-                    <Button x:Name="btn_Preferences" Content="Настройки"  Margin="5" Padding="3" Click="btn_Preferences_Click" />
-                    <Button x:Name="btn_Excel" Content="To Excel"  Width="75" Margin="5" Padding="3" Click="btn_Excel_Click"/>
-                    <Button x:Name="btn_ToMetrical" Content="В метрическую"  Width="100" Margin="5" Padding="3" Click="btn_ToMetrical_Click"/>
-                    <Button x:Name="btn_ToImperial" Content="В имперскую"  Width="91" Margin="5" Padding="3" Click="btn_ToImperial_Click"/>
-                    <Button x:Name="btn_Help" Content="Помощь"  Margin="5" Padding="3" Click="btn_Help_Click"/>
+                    <Button x:Name="btn_Start"  Content="{x:Static res:Resources.btn_Start}"  Width="75" Margin="5" Padding="3" Click="StartButton_Click" />
+                    <Button x:Name="btn_Stop" Content="{x:Static res:Resources.btn_Stop}"   Width="75" Margin="5" Padding="3" Click="StopButton_Click"/>
+                    <Button x:Name="btn_Preferences" Content="{x:Static res:Resources.btn_Preferences}"  Margin="5" Padding="3" Click="btn_Preferences_Click" />
+                    <Button x:Name="btn_Excel" Content="{x:Static res:Resources.btn_Excel}"  Width="75" Margin="5" Padding="3" Click="btn_Excel_Click"/>
+                    <Button x:Name="btn_ToMetrical" Content="{x:Static res:Resources.bnt_ToMetrical}"  Width="100" Margin="5" Padding="3" Click="btn_ToMetrical_Click"/>
+                    <Button x:Name="btn_ToImperial" Content="{x:Static res:Resources.btn_ToImperial}"  Width="91" Margin="5" Padding="3" Click="btn_ToImperial_Click"/>
+                    <Button x:Name="btn_Help" Content="{x:Static res:Resources.btn_Help}"  Margin="5" Padding="3" Click="btn_Help_Click"/>
                 </StackPanel>
                 <Grid Grid.Row="1" HorizontalAlignment="Left" Background="Lavender">
                     <Grid.RowDefinitions>
@@ -42,7 +43,7 @@
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
                         <ColumnDefinition Width="*"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <Label Content="Параметры для отображения:" Height="25" Grid.Row="0" Grid.Column ="0" Margin="0,5,5,0"/>
+                    <Label Content="{x:Static res:Resources.lbl_Params}" Height="25" Grid.Row="0" Grid.Column ="0" Margin="0,5,5,0"/>
                     <ListBox x:Name="lb_Columns" HorizontalAlignment="Left"  Width="202"
                          ItemsSource="{Binding TableColumns}" BorderThickness="2"
                          Grid.Row="1"
@@ -67,7 +68,7 @@
                 </StatusBar>
             </Grid>
         </TabItem>
-        <TabItem x:Name="Tab_Graph"  Header="Графики" Height="20" VerticalAlignment="Top"  >
+        <TabItem x:Name="Tab_Graph"  Header="{x:Static res:Resources.tab_Graph}" Height="20" VerticalAlignment="Top"  >
             <Grid>
                 <Grid.Resources>
                     <Style BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" TargetType="Button"></Style>
@@ -78,9 +79,10 @@
                     <RowDefinition Height="Auto"></RowDefinition>
                 </Grid.RowDefinitions>
                 <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Left" Background="Lavender">
-                    <Button x:Name="btn_Graph_Prefs" Content="Настройки" Margin="3,0,3,3" VerticalAlignment="Bottom" Click="btn_Graph_Prefs_Click" />
-                    <Button x:Name="btn_Graph_Save" Content="Сохранить" Margin="3" VerticalAlignment="Top" Click="btn_Graph_Save_Click"  />
-                    <Button x:Name="btn_Graph_Open" Content="Открыть" Margin="3" VerticalAlignment="Top" Click="btn_Graph_Open_Click"    />
+                    <Button x:Name="btn_Graph_Prefs" Content="{x:Static res:Resources.btn_Preferences}" Margin="3,0,3,3" VerticalAlignment="Bottom" Click="btn_Graph_Prefs_Click" />
+                    <Button x:Name="btn_Graph_Save" Content="{x:Static res:Resources.btn_Save}" Margin="3" VerticalAlignment="Top" Click="btn_Graph_Save_Click" />
+                    <Button x:Name="btn_Graph_Open" Content="{x:Static res:Resources.btn_Open}" Margin="3" VerticalAlignment="Top" Click="btn_Graph_Open_Click" />
+                    <Button x:Name="btn_Graph_Compare" Content="{x:Static res:Resources.btn_Graph_Compare}" Margin="3" VerticalAlignment="Top" Click="btn_Graph_Compare_Click" />
                 </StackPanel>
 
                 <WindowsFormsHost Grid.Row="1" x:Name ="WinHost" Margin="207,0,0,0" >
@@ -92,10 +94,11 @@
                     </StackPanel.Resources>
                     <WrapPanel x:Name="GraphPanel" />
                 </StackPanel>
-                <ComboBox x:Name="cb_Abscissa" HorizontalAlignment="Left" Margin="0,5,0,0" Grid.Row="1" VerticalAlignment="Top" Width="202"
+                <Label Content="{x:Static res:Resources.lbl_Abscissa}" HorizontalAlignment="Left" Margin="0,5,0,0" Grid.Row="1" VerticalAlignment="Top"/>
+                <ComboBox x:Name="cb_Abscissa" HorizontalAlignment="Left" Margin="0,33,0,0" Grid.Row="1" VerticalAlignment="Top" Width="202"
                           SelectionChanged="cb_Abscissa_SelectionChanged"
                           />
-                <ListBox x:Name="lb_Measures" HorizontalAlignment="Left" Margin="0,48,0,0" Grid.Row="1" Width="202"
+                <ListBox x:Name="lb_Measures" HorizontalAlignment="Left" Margin="0,87,0,0" Grid.Row="1" Width="202"
                          ItemsSource="{Binding Ordinats}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
@@ -108,11 +111,73 @@
                         </Style>
                     </ListBox.ItemContainerStyle>
                 </ListBox>
-                <Label x:Name="label" Content="Ось ординат:" HorizontalAlignment="Left" Margin="0,25,0,0" Grid.Row="1" VerticalAlignment="Top"/>
+                <Label x:Name="lbl_Ordinata" Content="{x:Static res:Resources.lbl_Ordinata}" HorizontalAlignment="Left" Margin="0,59,0,0" Grid.Row="1" VerticalAlignment="Top"/>
             </Grid>
         </TabItem>
-        <TabItem x:Name="Tab_Measures" Header="Измерения">
+        <TabItem x:Name="Tab_Measures" Header="{x:Static res:Resources.tab_Measures}">
 
         </TabItem>
+        <TabItem x:Name="Tab_Compare"  Header="{x:Static res:Resources.tab_Compare}" Height="20" VerticalAlignment="Top"  >
+            <Grid>
+                <Grid.Resources>
+                    <Style BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" TargetType="Button"></Style>
+                </Grid.Resources>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>               
+                <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Left" Background="Lavender">
+                    <Button x:Name="btn_Compare_Add" Content="{x:Static res:Resources.btn_Compare_Add}" Margin="3,0,3,3" VerticalAlignment="Bottom" Click="btn_Compare_Add_Click" />
+                    <Button x:Name="btn_Compare_Remove" Content="{x:Static res:Resources.btn_Compare_Remove}" Margin="3" VerticalAlignment="Top" Click="btn_Compare_Remove_Click" />
+                    <Button x:Name="btn_Compare_Prefs" Content="{x:Static res:Resources.btn_Preferences}" Margin="3" VerticalAlignment="Bottom" Click="btn_Graph_Prefs_Click" />
+                    <Button x:Name="btn_Compare_ToMetrical" Content="{x:Static res:Resources.bnt_ToMetrical}" Margin="3" Click="btn_Compare_ToMetrical_Click"/>
+                    <Button x:Name="btn_Compare_ToImperial" Content="{x:Static res:Resources.btn_ToImperial}" Margin="3" Click="btn_Compare_ToImperial_Click"/>
+                </StackPanel>
+
+                <WindowsFormsHost Grid.Row="1" x:Name ="wh_Compare" Margin="207,0,0,0" >
+                    <zg:ZedGraphControl Name="gc_Compare" Dock="Fill" IsShowPointValues="True"/>
+                </WindowsFormsHost>
+
+                <Label Content="{x:Static res:Resources.lbl_Compare_Sources}" HorizontalAlignment="Left" Grid.Row="1" VerticalAlignment="Top" />
+                <ListBox x:Name="lb_Compare_Sources" 
+                         HorizontalAlignment="Left" VerticalAlignment="Top"
+                         Margin="0,23,0,0" Grid.Row="1"  
+                         Width="202" Height="200">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding IsChecked}" Content="{Binding Item}"                                                             
+                                Margin="0,0,15,0"
+                                />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Style.Resources>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="LightBlue"/>
+                            </Style.Resources>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
+                
+                <Label Content="{x:Static res:Resources.lbl_Abscissa}" HorizontalAlignment="Left" Margin="0,230,0,0" Grid.Row="1" VerticalAlignment="Top"/>
+                <ComboBox x:Name="cb_Compare_Abscissa" HorizontalAlignment="Left" Margin="0,258,0,0" Grid.Row="1" VerticalAlignment="Top" Width="202"                         
+                          />
+                <Label Content="{x:Static res:Resources.lbl_Ordinata}" HorizontalAlignment="Left" Margin="0,284,0,0" Grid.Row="1" VerticalAlignment="Top"/>
+                <ListBox x:Name="lb_Compare_Measures" HorizontalAlignment="Left" Margin="0,312,0,0" Grid.Row="1" Width="202">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding IsChecked}" Content="{Binding Item}"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="{x:Type ListBoxItem}">
+                            <Setter Property="Focusable" Value="False"/>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
+            </Grid>
+        </TabItem>
+
     </TabControl>
 </Window>

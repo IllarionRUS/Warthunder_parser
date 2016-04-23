@@ -7,7 +7,6 @@ using System.Linq;
 using System.Windows;
 using System.Xml.Serialization;
 using Microsoft.Office.Interop.Excel;
-using WPF_TabletMap;
 using ZedGraph;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -15,8 +14,9 @@ using Action = System.Action;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
 using Window = System.Windows.Window;
-using WarThunderParser.controls;
+using WarThunderParser.Controls;
 using WarThunderParser.Core;
+using WarThunderParser.Utils;
 
 namespace WarThunderParser
 {
@@ -30,12 +30,13 @@ namespace WarThunderParser
         private CollectSettings _collectSettings;
         private FlightDataRecorder[] _recorders;     
         private Dictionary<string, Saver> _graphfileextensions;
-        HookDemoHelper _keyHooker = new HookDemoHelper();
+        private HookDemoHelper _keyHooker = new HookDemoHelper();
 
         public ObservableCollection<CheckedListItem<string>> TableColumns { get; set; }
         public ObservableCollection<CheckedListItem<string>> Ordinats { get; set; }
         private FdrManager m_Manager;
         private DataProcessingHelper m_DataProcessingHelper;
+        private CompareHelper m_CompareHelper;
 
         private SaveManager m_SaveManager;
         private OpenManager m_OpenManager;
@@ -106,20 +107,29 @@ namespace WarThunderParser
             m_Manager.OnDataCollected += OnDataCollected;
             m_Manager.OnTotalFailure += OnFailure;
             m_Manager.OnRecorderFailure += OnRecorderFailure;
+
+            m_CompareHelper = new CompareHelper()
+            {
+                GraphControl = (ZedGraphControl)wh_Compare.Child,
+                GraphSettings = _graphSettings,
+                LbSources = lb_Compare_Sources,
+                LbOdinates = lb_Compare_Measures,
+                CbAbscissa = cb_Compare_Abscissa
+            };
         }
 
-        private SavedState[] Load()
+        private SavedState Load()
         {
             try
             { 
-                var openResult = m_OpenManager.OpenMultiple(_graphfileextensions);
+                var openResult = m_OpenManager.Open(_graphfileextensions);
                 if (openResult == null)
                     return null;
-                return openResult.Cast<SavedState>().ToArray();
+                return openResult as SavedState;
             } 
             catch (Exception e)
             {
-                MessageBox.Show("Произошла ошибка! (" + e.Message + ")");
+                MessageBox.Show(Properties.Resources.common_error + " (" + e.Message + ")");
                 return null;
             }
         }
@@ -150,7 +160,7 @@ namespace WarThunderParser
 
             Action onFailureAction = delegate()
             {
-                StatusLabelMain.Content = "Сбор данных завершился с ошибками. Нажмите Start или F9 для начала нового сбора.";
+                StatusLabelMain.Content = Properties.Resources.state_failed;
                 Started = false;
             };
             if (!Started)
@@ -163,7 +173,7 @@ namespace WarThunderParser
         {
             if (!Started)
                 return;
-            StatusLabelSecond.Content = "Сборщик " + e.Recorder.Uri + " прекратил сбор с сообщением: " + e.Reason;
+            StatusLabelSecond.Content = string.Format(Properties.Resources.state_recorder_failed_format, e.Recorder.Uri, e.Reason);
         }
 
         private void StartButton_Click(object sender, RoutedEventArgs e)
@@ -208,7 +218,7 @@ namespace WarThunderParser
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Произошла ошибка! (" + ex.Message + ")");
+                MessageBox.Show(Properties.Resources.common_error + " (" + ex.Message + ")");
             }
         }
                 
@@ -230,7 +240,7 @@ namespace WarThunderParser
                 TableColumns.Add(item);
             }
 
-            StatusLabelMain.Content = "Данные успешно собраны. Нажмите Start или F9 для начала нового сбора.";
+            StatusLabelMain.Content = Properties.Resources.state_success;
             Started = false;
         }
 
@@ -240,14 +250,14 @@ namespace WarThunderParser
             cb_Abscissa.Items.Clear();
             TableColumns.Clear();
             StatusLabelSecond.Content = "";
-            StatusLabelMain.Content = "Идет сбор данных, нажмите Stop или F10 для завершения.";
+            StatusLabelMain.Content = Properties.Resources.state_collecting;
         }
 
         private void btn_Graph_Save_Click(object sender, RoutedEventArgs e)
         {
             if (m_DataProcessingHelper == null || m_DataProcessingHelper.GetCollectedMeasuresNames() == null || m_DataProcessingHelper.GetCollectedMeasuresNames().Count() == 0)
             {
-                MessageBox.Show("Нет данных для сохранения");
+                MessageBox.Show(Properties.Resources.save_error);
             }
             else
             {
@@ -262,8 +272,9 @@ namespace WarThunderParser
                 return;
             cb_Abscissa.Items.Clear();
             Ordinats.Clear();
+            TableColumns.Clear();
 
-            m_DataProcessingHelper.loadState(opened[0].Data);
+            m_DataProcessingHelper.loadState(opened.Data);
             foreach (var title in m_DataProcessingHelper.GetCollectedMeasuresNames())
             {
                 CheckedListItem<string> item = new CheckedListItem<string>() { Item = title };                
@@ -279,7 +290,7 @@ namespace WarThunderParser
 
             cb_Abscissa.SelectedItem = m_DataProcessingHelper.Graphs.First().XAxis;
             m_DataProcessingHelper.Graphs.Select(g => g.YAxis).ToList().ForEach(y => Ordinats.Where(o => o.Item.Equals(y)).First().IsChecked = true);
-            opened[0].CheckedTables.ForEach(c => TableColumns.Where(t => t.Item.Equals(c)).First().IsChecked = true);
+            opened.CheckedTables.ForEach(c => TableColumns.Where(t => t.Item.Equals(c)).First().IsChecked = true);
 
             cb_Abscissa.SelectionChanged += cb_Abscissa_SelectionChanged;
             Ordinats.ToList().ForEach(o => o.PropertyChanged += onOrdinateChecked);
@@ -308,6 +319,7 @@ namespace WarThunderParser
             {
                 _graphSettings = result;
                 m_DataProcessingHelper.GraphSettings = _graphSettings;
+                m_CompareHelper.GraphSettings = _graphSettings;
             }
         }
 
@@ -377,6 +389,62 @@ namespace WarThunderParser
             }
         }
 
+        private void btn_Compare_Add_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var openResult = m_OpenManager.OpenMultiple(_graphfileextensions);
+                if (openResult != null)
+                {
+                    foreach (var o in openResult)
+                    {
+                        var savedState = o.Value as SavedState;
+                        if (savedState != null)
+                        {
+                            CompareSource source = new CompareSource(string.IsNullOrEmpty(o.Key) ? CompareHelper.DEFAULT_NAME : o.Key, savedState.Data.data, savedState.Data.units);
+                            m_CompareHelper.AddSource(source);
+                        }                        
+                    }                
+                }                
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(Properties.Resources.common_error + " (" + ex.Message + ")");
+            }                        
+        }
+
+        private void btn_Compare_Remove_Click(object sender, RoutedEventArgs e)
+        {
+            if (lb_Compare_Sources.SelectedItem == null)
+                return;
+            var selectedSource = (lb_Compare_Sources.SelectedItem as CheckedListItem<string>).Item;
+            m_CompareHelper.RemoveSource(selectedSource);
+        }
+
+        private void btn_Compare_ToMetrical_Click(object sender, RoutedEventArgs e)
+        {
+            m_CompareHelper.SetMetrica(Metrica.Metric);
+        }
+
+        private void btn_Compare_ToImperial_Click(object sender, RoutedEventArgs e)
+        {
+            m_CompareHelper.SetMetrica(Metrica.Imperial);
+        }
+
+        private void btn_Graph_Compare_Click(object sender, RoutedEventArgs e)
+        {
+            var data = m_DataProcessingHelper.getData();
+            var units = m_DataProcessingHelper.getUnits();
+
+            if (data != null && data.Count() > 0 && units != null)
+            {
+                string title = string.IsNullOrEmpty(m_DataProcessingHelper.getType())
+                    ? CompareHelper.DEFAULT_NAME
+                    : m_DataProcessingHelper.getType();
+                CompareSource source = new CompareSource(title, data, units);
+                m_CompareHelper.AddSource(source);
+            }            
+        }
     }
         
 }

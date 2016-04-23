@@ -118,22 +118,22 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="bnt_ToMetrical" xml:space="preserve">
-    <value>Metrical</value>
+    <value>В метрическую</value>
   </data>
   <data name="btn_Excel" xml:space="preserve">
     <value>To Excel</value>
   </data>
   <data name="btn_Help" xml:space="preserve">
-    <value>Help</value>
+    <value>Помощь</value>
   </data>
   <data name="btn_Open" xml:space="preserve">
-    <value>Open</value>
+    <value>Открыть</value>
   </data>
   <data name="btn_Preferences" xml:space="preserve">
-    <value>Preferences</value>
+    <value>Настройки</value>
   </data>
   <data name="btn_Save" xml:space="preserve">
-    <value>Save</value>
+    <value>Сохранить</value>
   </data>
   <data name="btn_Start" xml:space="preserve">
     <value>Start</value>
@@ -142,174 +142,177 @@
     <value>Stop</value>
   </data>
   <data name="btn_ToImperial" xml:space="preserve">
-    <value>Imperial(UK)</value>
+    <value>В имперскую</value>
   </data>
   <data name="common_apply" xml:space="preserve">
-    <value>Apply</value>
+    <value>Применить</value>
   </data>
   <data name="common_cancel" xml:space="preserve">
-    <value>Cancel</value>
+    <value>Отмена</value>
   </data>
   <data name="common_error" xml:space="preserve">
-    <value>Error!</value>
+    <value>Произошла ошибка!</value>
   </data>
   <data name="critical_recorder_error" xml:space="preserve">
-    <value>Error of critical recorder</value>
+    <value>Сбой критического сборщика данных</value>
   </data>
   <data name="dlg_CS_btn_Add" xml:space="preserve">
-    <value>Add</value>
+    <value>Добавить</value>
   </data>
   <data name="dlg_CS_btn_Remove" xml:space="preserve">
-    <value>Remove</value>
+    <value>Удалить</value>
   </data>
   <data name="dlg_CS_cb_AltFeets" xml:space="preserve">
-    <value>Altitude in feets</value>
+    <value>Высота в футах</value>
   </data>
   <data name="dlg_CS_cb_ExcelSelectedOnly" xml:space="preserve">
-    <value>Copy into Excel only selected fields</value>
+    <value>Копировать в Excel только выбранный диапазон</value>
   </data>
   <data name="dlg_CS_cb_Filters" xml:space="preserve">
-    <value>Use filters</value>
+    <value>Использовать фильтры</value>
   </data>
   <data name="dlg_CS_cb_Outlier" xml:space="preserve">
-    <value>Outliers filter</value>
+    <value>Фильтр выбросов</value>
   </data>
   <data name="dlg_CS_g_Filters" xml:space="preserve">
-    <value>Filters</value>
+    <value>Фильтры</value>
   </data>
   <data name="dlg_CS_lbl_ConnectionTimeout" xml:space="preserve">
-    <value>Connection timeout, ms:</value>
+    <value>Ожидание подключения, мс:</value>
   </data>
   <data name="dlg_CS_lbl_Delay" xml:space="preserve">
-    <value>Request delay, ms:</value>
+    <value>Интервал запросов, мс:</value>
   </data>
   <data name="dlg_CS_lbl_DelayNote" xml:space="preserve">
-    <value>If delay is 0 next request will be send after previous will be completed</value>
+    <value>При нулевом значении, запрос посылается по выполнению предыдущего</value>
   </data>
   <data name="dlg_CS_lbl_Interpolation" xml:space="preserve">
-    <value>Interpolation interval, ms:</value>
+    <value>Интервал интерполяции, мс:</value>
   </data>
   <data name="dlg_CS_Title" xml:space="preserve">
-    <value>Data capture settings</value>
+    <value>Настройки сбора данных</value>
   </data>
   <data name="dlg_GS_cb_AddGrid" xml:space="preserve">
-    <value>Additional grid on</value>
+    <value>Включить дополнительную</value>
   </data>
   <data name="dlg_GS_cb_AxisColor" xml:space="preserve">
-    <value>Axis colors are same as curves</value>
+    <value>Оси цвета линий</value>
   </data>
   <data name="dlg_GS_cb_MainGrid" xml:space="preserve">
-    <value>Main grid on</value>
+    <value>Включить основную</value>
   </data>
   <data name="dlg_GS_cb_UseSmoothing" xml:space="preserve">
-    <value>On</value>
+    <value>Использовать</value>
   </data>
   <data name="dlg_GS_g_Grid" xml:space="preserve">
-    <value>Grid</value>
+    <value>Сетка</value>
   </data>
   <data name="dlg_GS_g_Smoothing" xml:space="preserve">
-    <value>Smoothing</value>
+    <value>Сглаживание</value>
   </data>
   <data name="dlg_GS_lbl_Font" xml:space="preserve">
-    <value>Font size:</value>
+    <value>Размер шрифта подписей:</value>
   </data>
   <data name="dlg_GS_Title" xml:space="preserve">
-    <value>Graphs preferences</value>
+    <value>Настройки графиков</value>
   </data>
   <data name="dlg_Help_Content" xml:space="preserve">
-    <value>How to use:
-- Press Start or F9 to begin data collection in battle/test flight. Before you start check "Altitude in feets" setting;
+    <value>Как работать:
 
-- To finish collection press Stop or F10
+- Нажимаем Start или F9 для начала сбора данных при запущеном бое(или пробном вылете, можно в паузе, данные все равно идут). Перед запуском обратите внимание на настройку "Высота в футах"
 
-- For data copying into Excel press appropriate button or use Ctrl+C/Ctrl+V.
+- По окончанию записи нажимаем F10 или Stop.
 
-- PREFERENCES: At data collection preferences it is possible to add or remove input data filters. They blocks collection of data from fields with same names. Exact names you can check at http://127.0.0.1:8111/indicators and http://127.0.0.1:8111/state. Saving of filters list now is not available but it's possible to change Filters.xml as you wish. It is possible to change requests interval and interpolation interval. Request interval will be used at next data collection,
-interpolation interval changing will cause recalculation of data after Apply pressed. Also you can set which data to copy to Excel - all cells or only selected. Outliers filter(filtering of extremal values) is not working now. 
+- Для экспорта в Excel либо нажимаем соответсвующую кнопку, либо ручками: Ctrl-C Ctrl-V работает. По умолчанию, при щелчке по кнопке экспорта копируются выбранные столбцы
+на всем диапазоне. В настройках можно указать копирование только выбранного диапазона.
 
-"Altitude in feets" - by default altitude unit is meter but for most of UK planes web-map show altitude in feets, for proper calculations set this checkbox on.
+- НАСТРОЙКИ: В настройках фильтра можно добавлять и удалять фильтры входных данных. Они блокируют генерацию данных из полей с соответствующими именами, предотвращая замусоривание панели выбора столбцов, посмотреть точное название имен вы можете по адресу
+http://127.0.0.1:8111/indicators и http://127.0.0.1:8111/state. Сохранение списка не предусмотрено, но можно править Filter.xml в папке приложения по своему вкусу. Можно изменить интервал запросов и интервал интерполяции. Интервал запросов вступает в силу при начале нового сбора данных, смена интервала интерполяции и    
+соответствующие изменения в таблице происходят по щелчку на кнопке "Применить". Также можно настроить копировать ли всю таблицу или только выбранный диапазон при экспорте в Excel. Фильтр выбросов (отсеивание экстремальных значений) пока что не работает 
+"Высота в футах" - по умолчанию сбор высоты идет в метрах, если в web-карту идут данные в футах(на многих британских самолетах это так) ставим этот чекбокс.
 
-- METRICAL and IMPERIAL(UK) - units conversion
+-"В МЕТРИЧЕСКУЮ" и "В ИМПЕРСКУЮ" выполняют конвертацию едениц измерения
 
-- GRAPHS in fact, are better to build in Excel, but for quick analysis they can be built right in app:
-Setting axis is available only after data was collected. To build graphs select X-Axis at dropdown and Y-Axis by checkboxes
+- ГРАФИКИ, на самом деле, красивее рисовать в том же экселе, но для быстрого просмотра можно и тут:
+Выбираем оси графика(доступно только после сбора данных) - абсциссу(Х) из выпадающего списка и ординаты(Y) чекбоксами
 
-- GRAPHS PREFERENCES - On/off curve smoothing, setting up smoothing interval. Without smoothing graphs will be built from raw data. Also there is some interface settings.
+- "НАСТРОЙКИ ГРАФИКОВ" - Включаем/выключаем сглаживание кривой, настраиваем интервал сглаживания. Без сглаживания будет отображаться т.н. RAW-данные (в чистом виде) 
++ всякие интерфейсные полезности
+            
+- "СОХРАНИТЬ" - сохраняет все данные и  графики
 
-- SAVE - save all data and graphs
-
-- LOAD - open saved data and graphs</value>
+- "ОТКРЫТЬ" - открыть ранее сохраненные графики и данные</value>
   </data>
   <data name="lbl_Ordinata" xml:space="preserve">
-    <value>Y-Axis:</value>
+    <value>Ось ординат:</value>
   </data>
   <data name="lbl_Params" xml:space="preserve">
-    <value>Data to show</value>
+    <value>Параметры для отображения:</value>
   </data>
   <data name="recorder_failed" xml:space="preserve">
-    <value>Collection failed</value>
+    <value>Не удалось собрать данные.</value>
   </data>
   <data name="save_error" xml:space="preserve">
-    <value>No data to save</value>
+    <value>Нет данных для сохранения</value>
   </data>
   <data name="state_collecting" xml:space="preserve">
-    <value>Data collection in progress. Press Stop or F10 to finish.</value>
+    <value>Идет сбор данных, нажмите Stop или F10 для завершения.</value>
   </data>
   <data name="state_failed" xml:space="preserve">
-    <value>Data collection finished with errors. Press start or F9 to collect new data.</value>
+    <value>Сбор данных завершился с ошибками. Нажмите Start или F9 для начала нового сбора.</value>
   </data>
   <data name="state_recorder_failed_format" xml:space="preserve">
-    <value>Recorder {0} finished collection with error: {1}</value>
+    <value>Сборщик {0} прекратил сбор с сообщением: {1}</value>
   </data>
   <data name="state_success" xml:space="preserve">
-    <value>Data collection finished successfully! Press Start or F9 to collect new data.</value>
+    <value>Данные успешно собраны. Нажмите Start или F9 для начала нового сбора.</value>
   </data>
   <data name="tab_Data" xml:space="preserve">
-    <value>Capture</value>
+    <value>Сбор данных</value>
   </data>
   <data name="tab_Graph" xml:space="preserve">
-    <value>Graphs</value>
+    <value>Графики</value>
   </data>
   <data name="tab_Measures" xml:space="preserve">
-    <value>Measures</value>
+    <value>Измерения</value>
   </data>
   <data name="Title" xml:space="preserve">
     <value>WTParser v1.1.7</value>
   </data>
-  <data name="dlg_GS_lbl_SmoothLevel" xml:space="preserve">
-    <value>Level of smoothing, pixels:</value>
-  </data>
   <data name="dlg_GS_cb_AxisLbl" xml:space="preserve">
-    <value>Axis titles</value>
+    <value>Подписи осей</value>
   </data>
   <data name="dlg_GS_cb_ShowLegend" xml:space="preserve">
-    <value>Show legend</value>
+    <value>Показывать легенду</value>
   </data>
   <data name="dlg_GS_g_Legend" xml:space="preserve">
-    <value>Legend</value>
+    <value>Легенда</value>
+  </data>
+  <data name="dlg_GS_lbl_SmoothLevel" xml:space="preserve">
+    <value>Размер выборки, пиксели:</value>
   </data>
   <data name="btn_Compare_Add" xml:space="preserve">
-    <value>Add</value>
+    <value>Добавить</value>
   </data>
   <data name="btn_Compare_Remove" xml:space="preserve">
-    <value>Remove</value>
+    <value>Удалить</value>
   </data>
   <data name="tab_Compare" xml:space="preserve">
-    <value>Compare</value>
+    <value>Сравнить</value>
   </data>
   <data name="lbl_Compare_Sources" xml:space="preserve">
-    <value>Sources:</value>
+    <value>Источники данных:</value>
   </data>
   <data name="lbl_Abscissa" xml:space="preserve">
-    <value>X-Axis:</value>
+    <value>Ось абсцисс:</value>
   </data>
   <data name="default_plot_title" xml:space="preserve">
-    <value>Plot</value>
+    <value>График</value>
   </data>
   <data name="compare_ordinats_limit_format" xml:space="preserve">
-    <value>Only {0} Y-Axis allowed</value>
+    <value>Разрешено только {0} осей ординат</value>
   </data>
   <data name="btn_Graph_Compare" xml:space="preserve">
-    <value>Add to comparsion</value>
+    <value>Добавить к сравнению</value>
   </data>
 </root>

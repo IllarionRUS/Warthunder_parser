@@ -5,10 +5,17 @@ using System.Text;
 
 namespace WarThunderParser.Core
 {
+    public enum Metrica
+    {
+        Metric,
+        Imperial
+    }
+
     public class Consts
     {
         public static class Value
         {
+            public const string Type = "type";
             public const string Time = "Time";            
             public const string TAS = "TAS";
             public const string IAS = "IAS";

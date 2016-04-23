@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using WarThunderParser.Utils;
 
 namespace WarThunderParser.Core
 {
     public partial class DataProcessingHelper
     {
+        private string m_Type;
         private Dictionary<string, List<double>> m_Data = new Dictionary<string, List<double>>();
         private Dictionary<string, string> m_Units = new Dictionary<string, string>();
         private int m_DataSize;
@@ -14,8 +16,8 @@ namespace WarThunderParser.Core
         // for proper recalcs on collectSettings change
         private DateTime? m_SynchTime;
 
-        private ImperialToMetrical m_MetricalConverter;
-        private MetricalToImperial m_ImperialConverter;
+        private MetricalToImperialConverter m_Metrical2ImperialConverter;
+        private ImperialToMetricalConverter m_Imperial2MetricalConverter;
 
         private void CollectData()
         {
@@ -65,7 +67,16 @@ namespace WarThunderParser.Core
                     m_Data.Add(name, approximated[Array.IndexOf(recorder.Names, name)]);
                     m_Units.Add(name, unit);  
                 }
+
+                if (recorder.TextData.ContainsKey(Consts.Value.Type))
+                    m_Type = recorder.TextData[Consts.Value.Type];
             }
+            if (m_Data.Count == 0)
+            {
+                m_DataSize = 0;
+                return;
+            }
+
             CalcAcceleration();
 
             foreach (var keyValue in m_Data)
@@ -113,12 +124,12 @@ namespace WarThunderParser.Core
 
         public void ConvertToMetrical()
         {
-            m_MetricalConverter.Convert();
+            Convert(m_Imperial2MetricalConverter);
         }
 
         public void ConvertToImperial()
         {
-            m_ImperialConverter.Convert();
+            Convert(m_Metrical2ImperialConverter);
         }
 
         public string[] GetCollectedMeasuresNames()
@@ -128,6 +139,62 @@ namespace WarThunderParser.Core
                 : m_Data.Keys.ToArray();
         }
 
+        private void Convert(UnitConverter converter)
+        {
+            var toConvert = m_Data.Where(d => Array.IndexOf(converter.getConvertableUnits(), m_Units[d.Key]) >= 0).ToArray();
+
+            foreach (var keyValue in toConvert)
+            {
+                string newUnit = converter.Convert(m_Data[keyValue.Key], m_Units[keyValue.Key]);
+                
+                var toUpdateX = Graphs.Where(graph => graph.XAxis != null && string.Equals(graph.XAxis, keyValue.Key));
+                var toUpdateY = Graphs.Where(graph => graph.YAxis != null && string.Equals(graph.YAxis, keyValue.Key));
+                foreach (Graph graph in toUpdateX)
+                {
+                    graph.X_Unit = newUnit;
+                    for (int i = 0; i < m_DataSize; i++)
+                        graph.PointPairs[i].X = m_Data[keyValue.Key][i];
+                }
+                foreach (Graph graph in toUpdateY)
+                {
+                    graph.Y_Unit = newUnit;
+                    for (int i = 0; i < m_DataSize; i++)
+                        graph.PointPairs[i].Y = m_Data[keyValue.Key][i];
+                }
+
+                m_Units[keyValue.Key] = newUnit;
+            }
+
+            Redraw();
+            var visibleColumns = DataGrid.Columns
+                .Where(c => c.Visibility == System.Windows.Visibility.Visible)
+                .Select(s => s.Header.ToString().Split(",".ToCharArray())[0])
+                .ToList();
+            UpdateDataGrid();
+            foreach (var columnName in visibleColumns)
+                ShowColumn(columnName);
+        }
+
+        public Dictionary<string, List<double>> getData()
+        {
+            if (m_Data == null)
+                return null;
+            return m_Data.ToDictionary(entry => entry.Key, entry => new List<double>(entry.Value));
+        }
+
+        public Dictionary<string, string> getUnits()
+        {
+            if (m_Units == null)
+                return null;
+            return m_Units.ToDictionary(entry => entry.Key, entry => entry.Value);
+        }
+
+        public string getType()
+        {
+            return m_Type;
+        }
+
+        /*
         private abstract class UnitConverter
         {
             private DataProcessingHelper processingHelper;
@@ -254,6 +321,6 @@ namespace WarThunderParser.Core
                 return new KeyValuePair<string, double>(newUnit, factor);
             }
         }
-
+        */
     }
 }

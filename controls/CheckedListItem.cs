@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 
-namespace WarThunderParser.controls
+namespace WarThunderParser.Controls
 {
     public class CheckedListItem<T> : INotifyPropertyChanged
     {
