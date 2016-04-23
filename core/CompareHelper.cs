@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Windows;
 using System.Windows.Controls;
 using WarThunderParser.Controls;
 using WarThunderParser.Utils;
@@ -11,7 +13,7 @@ using ZedGraph;
 
 namespace WarThunderParser.Core
 {
-    public struct CompareSource
+    public class CompareSource
     {
         internal string Title { get; set; }
         private Dictionary<string, List<double>> m_Values;
@@ -37,11 +39,10 @@ namespace WarThunderParser.Core
 
     public class CompareHelper
     {
-        //todo add binds
-        private const int MAX_ORDINATES = 5; //because 5 default line styles
-        private readonly string DEFAULT_NAME = Properties.Resources.default_plot_title;        
+        public static readonly string DEFAULT_NAME = Properties.Resources.default_plot_title;
+        private const int MAX_ORDINATES = 4; //because 4 default line styles     
 
-        private List<Graph> m_Graphs;
+        private List<KeyValuePair<string, List<Graph>>> m_Graphs; //<source.Title, graps for source>
         private GraphSettings m_GraphSettings;
         private ObservableCollection<CompareSource> m_Sources;
 
@@ -52,6 +53,8 @@ namespace WarThunderParser.Core
 
         private ImperialToMetricalConverter m_Imperical2MetricalConverter;
         private MetricalToImperialConverter m_Metrical2ImperialConverter;
+        
+        private ComboBox m_CbAbscissa;
 
         public ZedGraphControl GraphControl { get; set; }
         public GraphSettings GraphSettings
@@ -74,15 +77,25 @@ namespace WarThunderParser.Core
         {
             set
             {
-                value.ItemsSource = m_Dimensions;
+                value.ItemsSource = m_AvailableOrdinates;
             }
         }
-        public ComboBox CbAbscissa { get; set; }
+        public ComboBox CbAbscissa {
+            get
+            {
+                return m_CbAbscissa;
+            }
+            set
+            {
+                m_CbAbscissa = value;
+                m_CbAbscissa.SelectionChanged += OnAbscissaChanged;
+            }
+        }
 
         public CompareHelper()
         {
             m_Metrica = Metrica.Metric;
-            m_Graphs = new List<Graph>();
+            m_Graphs = new List<KeyValuePair<string, List<Graph>>>();
             m_Dimensions = new Dictionary<string, int>();
             m_Sources = new ObservableCollection<CompareSource>();
             m_Sources.CollectionChanged += OnSourcesChanged;
@@ -92,16 +105,16 @@ namespace WarThunderParser.Core
 
             m_Imperical2MetricalConverter = new ImperialToMetricalConverter();
             m_Metrical2ImperialConverter = new MetricalToImperialConverter();
-        }
+        }        
 
         public void AddSource(CompareSource source)
         {
             m_Sources.Add(source);
         }
 
-        public void RemoveSource(CompareSource source)
+        public void RemoveSource(string source)
         {
-            m_Sources.Remove(source);
+            m_Sources.Remove(m_Sources.Where(s => s.Title.Equals(source)).First());
         }
 
         public void SetMetrica(Metrica metrica)
@@ -130,13 +143,13 @@ namespace WarThunderParser.Core
                     {
                         string newUnit = converter.Convert(data[keyValue.Key], units[keyValue.Key]);
 
-                        var toUpdateX = m_Graphs.Where(graph =>
-                            graph.GraphName.Equals(source.Title + "_" + graph.YAxis + "(" + graph.XAxis ?? "" + ")")
+                        var toUpdateX = m_Graphs.SelectMany(g => g.Value).Where(graph =>
+                            graph.GraphName.Equals(source.Title + "_" + graph.YAxis + "(" + (graph.XAxis ?? "") + ")")
                             && graph.XAxis != null 
                             && string.Equals(graph.XAxis, keyValue.Key));
 
-                        var toUpdateY = m_Graphs.Where(graph =>
-                            graph.GraphName.Equals(source.Title + "_" + graph.YAxis + "(" + graph.XAxis ?? "" + ")")
+                        var toUpdateY = m_Graphs.SelectMany(g => g.Value).Where(graph =>
+                            graph.GraphName.Equals(source.Title + "_" + graph.YAxis + "(" + (graph.XAxis ?? "") + ")")
                             && graph.YAxis != null 
                             && string.Equals(graph.YAxis, keyValue.Key));
 
@@ -164,26 +177,23 @@ namespace WarThunderParser.Core
         #region UI
         private void BuildGraph(string x, string y)
         {
-            var validSources = m_Sources.Where(s => (string.IsNullOrWhiteSpace(x) || s.getValues().ContainsKey(x)) && s.getValues().ContainsKey(y));
-            var ordinatesCount = m_Graphs.Select(g => g.YAxis).Distinct().Count();
-            if (ordinatesCount > MAX_ORDINATES)
-                throw new InvalidOperationException("only 5 ordinates allowed");
-
-            int i = 0;
+            var validSources = m_Sources.Where(s => (string.IsNullOrWhiteSpace(x) || s.getValues().ContainsKey(x)) && s.getValues().ContainsKey(y) 
+                && m_AvailableSources.Where(a => a.IsChecked).Select(a => a.Item).Contains(s.Title));
+                                       
             foreach (var source in validSources)
             {
                 var title = source.Title;
-                var x_values = source.getValues()[x].ToArray();
+                var x_values = string.IsNullOrWhiteSpace(x) ? null : source.getValues()[x].ToArray();
                 var y_values = source.getValues()[y].ToArray();
                 // x.Length == y.Length implies from data catching procedure
                 int dataSize = x_values.Length;
-                var color = GraphSettings.CurveLines[i ++].LineColor;
+                //var color = GraphSettings.CurveLines[m_Sources.IndexOf(source)].LineColor;
 
                 Graph graph = null;
                 if (string.IsNullOrWhiteSpace(x))
                 {
                     var points = new PointPairList(new double[dataSize], y_values);
-                    graph = new Graph(points, title + "_" + y + "(" + x ?? "" + ")", x, y, null, source.getUnits()[y]);
+                    graph = new Graph(points, title + "_" + y + "(" + (x ?? "") + ")", x, y, null, source.getUnits()[y]);
                     
                 }
                 else
@@ -192,35 +202,59 @@ namespace WarThunderParser.Core
                     graph = new Graph(points, title + "_" + y + "(" + x + ")", x, y, source.getUnits()[x], source.getUnits()[y]);
                 }
 
-                graph.Color = color;
-                if (ordinatesCount > 1)
-                    graph.DashStyle = (System.Drawing.Drawing2D.DashStyle)ordinatesCount;
-                m_Graphs.Add(graph);
+                //graph.Color = color;
+                //if (ordinatesCount > 1)
+                //    graph.DashStyle = (System.Drawing.Drawing2D.DashStyle)ordinatesCount;
+
+                var graphsForCurrentSource = m_Graphs.Where(g => g.Key.Equals(source.Title));
+                if (graphsForCurrentSource == null || graphsForCurrentSource.Count() == 0)
+                {
+                    List<Graph> newGraphList = new List<Graph>();
+                    newGraphList.Add(graph);
+                    KeyValuePair<string, List<Graph>> newKeyValue = new KeyValuePair<string, List<Graph>>(source.Title, newGraphList);
+                    m_Graphs.Add(newKeyValue);
+                }
+                else
+                {
+                    var targetList = graphsForCurrentSource.First().Value;
+                    targetList.Add(graph);
+                }
             }
-            Redraw();
         }
         
-        public void SetAbscissa(string abscissa)
+        private void SetAbscissa(string abscissa)
         {
             m_Abs = abscissa;
-            var currentOrdinates = m_Graphs.Select(t => t.YAxis).ToArray();
+            var currentOrdinates = m_Graphs.Count > 0 ? m_Graphs.First().Value.Select(t => t.YAxis).ToArray() : null;
             m_Graphs.Clear();
-            foreach (var ordinate in currentOrdinates)
-                BuildGraph(m_Abs, ordinate);
+            if (currentOrdinates != null)
+                foreach (var ordinate in currentOrdinates)
+                    BuildGraph(m_Abs, ordinate);
             if (m_Graphs.Count > 0)
                 Redraw();
         }
 
-        public void AddOrdinate(string ordinate)
+        private void AddOrdinate(string ordinate)
         {
+            var ordinatesCount = m_Graphs.Count > 0
+                ? m_Graphs.First().Value.Count
+                : 0;
+            if (ordinatesCount == MAX_ORDINATES)
+            {
+                m_AvailableOrdinates.Where(o => o.Item.Equals(ordinate)).First().IsChecked = false;
+                MessageBox.Show("only " + MAX_ORDINATES + " ordinates allowed");
+                return;
+            }
+
             BuildGraph(m_Abs, ordinate);
             if (m_Abs != null)
                 Redraw();
         }
 
-        public void RemoveOrdinate(string ordinate)
+        private void RemoveOrdinate(string ordinate)
         {
-            m_Graphs.RemoveAll(g => g.YAxis.Equals(ordinate));
+            foreach (var keyValue in m_Graphs)
+                keyValue.Value.RemoveAll(g => g.YAxis.Equals(ordinate));
             Redraw();
         }
                 
@@ -231,53 +265,63 @@ namespace WarThunderParser.Core
             GraphControl.GraphPane.CurveList.Clear();
             GraphPane pane = GraphControl.GraphPane;
             pane.YAxisList.Clear();
-            if (m_Graphs.Count == 0)
+
+            //var graphs = m_Graphs.SelectMany(g => g.Value).ToList();
+            if (m_Graphs.SelectMany(g => g.Value).Count() == 0)
             {
                 pane.XAxis.Title.Text = "";
                 return;
             }
-
+            
             var yAxises = new Dictionary<string, int>();
-            for (int k = 0; k < m_Graphs.Count; k++)
+
+            int color = 0;
+            foreach (var keyValue in m_Graphs)
             {
-                Graph graph = m_Graphs[k];
-                var line = graph.GetLineItem();
-                if (GraphSettings.Smooth)
+                var lineColor = GraphSettings.CurveLines[color++].LineColor;
+                for (int i = 0; i < keyValue.Value.Count(); i++) 
                 {
-                    var curList = (IPointList)line.Points.Clone();
-                    var average = new MovingAverage(GraphSettings.SmoothPeriod);
-
-                    switch (GraphSettings.SmoothType)
+                    Graph graph = keyValue.Value[i];
+                    var line = graph.GetLineItem();
+                    if (GraphSettings.Smooth)
                     {
-                        case SmoothModel.Average:
-                            for (int i = 0; i < curList.Count; i++)
-                            {
-                                average.Push(curList[i].Y);
-                                curList[i].Y = average.Average;
-                            }
-                            break;
-                        case SmoothModel.Median:
-                            for (int i = 0; i < curList.Count; i++)
-                            {
-                                average.Push(curList[i].Y);
-                                curList[i].Y = average.Median;
-                            }
-                            break;
-                        default:
-                            break;
-                    }
+                        var curList = (IPointList)line.Points.Clone();
+                        var average = new MovingAverage(GraphSettings.SmoothPeriod);
 
-                    line.Points = curList;
+                        switch (GraphSettings.SmoothType)
+                        {
+                            case SmoothModel.Average:
+                                for (int j = 0; j < curList.Count; j++)
+                                {
+                                    average.Push(curList[j].Y);
+                                    curList[j].Y = average.Average;
+                                }
+                                break;
+                            case SmoothModel.Median:
+                                for (int j = 0; j < curList.Count; j++)
+                                {
+                                    average.Push(curList[i].Y);
+                                    curList[j].Y = average.Median;
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+
+                        line.Points = curList;
+                    }
+                    var yAxisLabel = graph.YAxis + (string.IsNullOrEmpty(graph.Y_Unit) ? "" : (", " + graph.Y_Unit));
+                    if (!yAxises.ContainsKey(yAxisLabel))
+                        yAxises.Add(yAxisLabel, pane.AddYAxis(yAxisLabel));
+                    line.YAxisIndex = yAxises[yAxisLabel];
+                    line.Line.Style = (System.Drawing.Drawing2D.DashStyle)i;
+                    line.Line.Color = lineColor;
+                    pane.CurveList.Add(line);
                 }
-                var yAxisLabel = graph.YAxis + (string.IsNullOrEmpty(graph.Y_Unit) ? "" : (", " + graph.Y_Unit));
-                if (!yAxises.ContainsKey(yAxisLabel))
-                    yAxises.Add(yAxisLabel, pane.AddYAxis(yAxisLabel));
-                line.YAxisIndex = yAxises[yAxisLabel];
-                pane.CurveList.Add(line);
             }
 
-            pane.XAxis.Title.Text = m_Graphs.Last().XAxis
-                + (string.IsNullOrEmpty(m_Graphs.Last().X_Unit) ? "" : (", " + m_Graphs.Last().X_Unit));
+            pane.XAxis.Title.Text = m_Graphs.First().Value.First().XAxis
+                + (string.IsNullOrEmpty(m_Graphs.First().Value.First().X_Unit) ? "" : (", " + m_Graphs.First().Value.First().X_Unit));
             pane.Title.Text = "";
 
             GraphControl.AxisChange();
@@ -344,7 +388,7 @@ namespace WarThunderParser.Core
 
         #endregion
 
-        #region collections events
+        #region events
         private void OnSourcesChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             ObservableCollection<CompareSource> obsSender = sender as ObservableCollection<CompareSource>;
@@ -353,13 +397,16 @@ namespace WarThunderParser.Core
             {
                 foreach (var newItem in e.NewItems)
                 {
-                    var newSource = (CompareSource)newItem;
-
+                    var newSource = m_Sources[m_Sources.IndexOf((CompareSource)newItem)];
+                    
                     int titleNum = 1;
+                    
                     if (string.IsNullOrEmpty(newSource.Title.Trim()))
                         newSource.Title = DEFAULT_NAME;
-                    while (m_Sources.Where(s => s.Title.Equals(newSource.Title)).Count() > 0)
-                        newSource.Title = newSource.Title + titleNum++;
+
+                    string title = newSource.Title;
+                    while (m_Sources.Where(s => s.Title.Equals(newSource.Title)).Count() > 1)
+                        newSource.Title = title + titleNum++;
 
                     newSource.getValues().Keys.ToList().ForEach(
                         k =>
@@ -369,7 +416,9 @@ namespace WarThunderParser.Core
                             else
                             {
                                 m_Dimensions.Add(k, 1);
-                                m_AvailableOrdinates.Add(new CheckedListItem<string>(k));
+                                var newOrdinateCheckbox = new CheckedListItem<string>(k);
+                                newOrdinateCheckbox.PropertyChanged += OnOrdinateCheckChanged;
+                                m_AvailableOrdinates.Add(newOrdinateCheckbox);
                                 CbAbscissa.Items.Add(k);
                             }
                         });
@@ -393,7 +442,9 @@ namespace WarThunderParser.Core
                         default:
                             throw new InvalidOperationException("invalid metrica");
                     }
-                    m_AvailableSources.Add(new CheckedListItem<string>(newSource.Title));
+                    var newSourceCheckbox = new CheckedListItem<string>(newSource.Title);
+                    newSourceCheckbox.PropertyChanged += OnSourceCheckChanged;
+                    m_AvailableSources.Add(newSourceCheckbox);
                 }
             }
             else if (e.Action == NotifyCollectionChangedAction.Remove)
@@ -410,7 +461,7 @@ namespace WarThunderParser.Core
                             m_Dimensions.Remove(dimension);
                             CbAbscissa.Items.Remove(dimension);
 
-                            var ordinatesToRemove = m_AvailableOrdinates.Where(o => o.Item.Equals(dimension));
+                            var ordinatesToRemove = m_AvailableOrdinates.Where(o => o.Item.Equals(dimension)).ToList();
                             foreach (var item in ordinatesToRemove)
                                 m_AvailableOrdinates.Remove(item);
                         }
@@ -418,15 +469,91 @@ namespace WarThunderParser.Core
                             m_Dimensions[dimension]--;
                     }
 
-                    m_Graphs.RemoveAll(g => g.GraphName.Equals(removedSource.Title + "_" + g.YAxis + "(" + g.XAxis ?? "" + ")"));
+                    m_Graphs.RemoveAll(g => g.Key.Equals(removedSource.Title));
 
-                    var toRemove = m_AvailableSources.Where(s => s.Item.Equals(removedSource.Title));
+                    var toRemove = m_AvailableSources.Where(s => s.Item.Equals(removedSource.Title)).ToList();
                     foreach (var item in toRemove)
                         m_AvailableSources.Remove(item);
                 }
                 Redraw();
             }
         }
+
+        private void OnOrdinateCheckChanged(object sender, PropertyChangedEventArgs args)
+        {
+            CheckedListItem<string> item = sender as CheckedListItem<string>;
+            if (item.IsChecked)
+                AddOrdinate(item.Item);
+            else
+                RemoveOrdinate(item.Item);
+        }
+
+        private void OnSourceCheckChanged(object sender, PropertyChangedEventArgs args)
+        {
+            CheckedListItem<string> item = sender as CheckedListItem<string>;
+            if (item.IsChecked)
+            {
+                var checkedOrds = m_AvailableOrdinates.Where(o => o.IsChecked).ToList();
+                var ordinatesCount = checkedOrds.Count();
+                if (ordinatesCount == 0)
+                    return;
+
+                m_AvailableOrdinates.Where(o => o.IsChecked).ToList().ForEach(c =>
+                    {
+                        var source = m_Sources.Where(s => s.Title.Equals(item.Item)).First();
+                        //var color = GraphSettings.CurveLines[m_Sources.IndexOf(source)].LineColor;
+                        var title = item.Item;
+                        var x_values = string.IsNullOrEmpty(m_Abs) ? null : source.getValues()[m_Abs].ToArray();
+                        var y_values = source.getValues()[c.Item].ToArray();
+                        // x.Length == y.Length implies from data catching procedure
+                        int dataSize = x_values.Length;
+
+                        var x = m_Abs;
+                        var y = c.Item;
+                        Graph graph = null;
+                        if (string.IsNullOrWhiteSpace(x))
+                        {
+                            var points = new PointPairList(new double[dataSize], y_values);
+                            graph = new Graph(points, title + "_" + y + "(" + (x ?? "") + ")", x, y, null, source.getUnits()[y]);
+
+                        }
+                        else
+                        {
+                            var points = new PointPairList(x_values, y_values);
+                            graph = new Graph(points, title + "_" + y + "(" + x + ")", x, y, source.getUnits()[x], source.getUnits()[y]);
+                        }
+
+                        //graph.Color = color;
+                        //graph.DashStyle = (System.Drawing.Drawing2D.DashStyle)(ordinatesCount - 1);
+
+                        var graphsForCurrentSource = m_Graphs.Where(g => g.Key.Equals(source.Title));
+                        if (graphsForCurrentSource == null || graphsForCurrentSource.Count() == 0)
+                        {
+                            List<Graph> newGraphList = new List<Graph>();
+                            newGraphList.Add(graph);
+                            var newKeyValue = new KeyValuePair<string, List<Graph>>(title, newGraphList);
+                            m_Graphs.Add(newKeyValue);
+                        }
+                        else
+                        {
+                            var targetList = graphsForCurrentSource.First().Value;
+                            targetList.Add(graph);
+                        }
+                    }
+                );
+            }
+            else
+            {
+                m_Graphs.RemoveAll(g => g.Key.Equals(item.Item));           
+            }
+            Redraw();
+        }
+
+        private void OnAbscissaChanged(object sender, SelectionChangedEventArgs e)
+        {
+            SetAbscissa(CbAbscissa.SelectedItem == null ? null : CbAbscissa.SelectedItem.ToString());
+        }
+        
         #endregion
 
     }

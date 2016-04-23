@@ -127,28 +127,32 @@
                     <RowDefinition Height="Auto"></RowDefinition>
                 </Grid.RowDefinitions>               
                 <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Left" Background="Lavender">
-                    <Button x:Name="btn_Compare_Add" Content="{x:Static res:Resources.btn_Compare_Add}" Margin="3,0,3,3" VerticalAlignment="Bottom" />
-                    <Button x:Name="btn_Compare_Remove" Content="{x:Static res:Resources.btn_Compare_Remove}" Margin="3" VerticalAlignment="Top" />
+                    <Button x:Name="btn_Compare_Add" Content="{x:Static res:Resources.btn_Compare_Add}" Margin="3,0,3,3" VerticalAlignment="Bottom" Click="btn_Compare_Add_Click" />
+                    <Button x:Name="btn_Compare_Remove" Content="{x:Static res:Resources.btn_Compare_Remove}" Margin="3" VerticalAlignment="Top" Click="btn_Compare_Remove_Click" />
+                    <Button x:Name="btn_Compare_Prefs" Content="{x:Static res:Resources.btn_Preferences}" Margin="3" VerticalAlignment="Bottom" Click="btn_Graph_Prefs_Click" />
+                    <Button x:Name="btn_Compare_ToMetrical" Content="{x:Static res:Resources.bnt_ToMetrical}" Margin="3" Click="btn_Compare_ToMetrical_Click"/>
+                    <Button x:Name="btn_Compare_ToImperial" Content="{x:Static res:Resources.btn_ToImperial}" Margin="3" Click="btn_Compare_ToImperial_Click"/>
                 </StackPanel>
 
                 <WindowsFormsHost Grid.Row="1" x:Name ="wh_Compare" Margin="207,0,0,0" >
                     <zg:ZedGraphControl Name="gc_Compare" Dock="Fill" IsShowPointValues="True"/>
                 </WindowsFormsHost>
 
-                <Label Content="{x:Static res:Resources.lbl_Compare_Sources}" HorizontalAlignment="Left" Grid.Row="1" VerticalAlignment="Top" RenderTransformOrigin="0.769,0.696"/>
+                <Label Content="{x:Static res:Resources.lbl_Compare_Sources}" HorizontalAlignment="Left" Grid.Row="1" VerticalAlignment="Top" />
                 <ListBox x:Name="lb_Compare_Sources" 
                          HorizontalAlignment="Left" VerticalAlignment="Top"
                          Margin="0,23,0,0" Grid.Row="1" 
-                         Width="202" Height="200"
-                         ItemsSource="{Binding Ordinats}">
+                         Width="202" Height="200">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <CheckBox IsChecked="{Binding IsChecked}" Content="{Binding Item}"/>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                     <ListBox.ItemContainerStyle>
-                        <Style TargetType="{x:Type ListBoxItem}">
-                            <Setter Property="Focusable" Value="False"/>
+                        <Style TargetType="ListBoxItem">
+                            <Style.Resources>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="LightBlue"/>
+                            </Style.Resources>
                         </Style>
                     </ListBox.ItemContainerStyle>
                 </ListBox>
@@ -157,8 +161,7 @@
                 <ComboBox x:Name="cb_Compare_Abscissa" HorizontalAlignment="Left" Margin="0,258,0,0" Grid.Row="1" VerticalAlignment="Top" Width="202"                         
                           />
                 <Label Content="{x:Static res:Resources.lbl_Ordinata}" HorizontalAlignment="Left" Margin="0,284,0,0" Grid.Row="1" VerticalAlignment="Top"/>
-                <ListBox x:Name="lb_Compare_Measures" HorizontalAlignment="Left" Margin="0,312,0,0" Grid.Row="1" Width="202"
-                         ItemsSource="{Binding Ordinats}">
+                <ListBox x:Name="lb_Compare_Measures" HorizontalAlignment="Left" Margin="0,312,0,0" Grid.Row="1" Width="202">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <CheckBox IsChecked="{Binding IsChecked}" Content="{Binding Item}"/>

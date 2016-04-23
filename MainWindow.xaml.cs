@@ -107,6 +107,15 @@ namespace WarThunderParser
             m_Manager.OnDataCollected += OnDataCollected;
             m_Manager.OnTotalFailure += OnFailure;
             m_Manager.OnRecorderFailure += OnRecorderFailure;
+
+            m_CompareHelper = new CompareHelper()
+            {
+                GraphControl = (ZedGraphControl)wh_Compare.Child,
+                GraphSettings = _graphSettings,
+                LbSources = lb_Compare_Sources,
+                LbOdinates = lb_Compare_Measures,
+                CbAbscissa = cb_Compare_Abscissa
+            };
         }
 
         private SavedState[] Load()
@@ -310,6 +319,7 @@ namespace WarThunderParser
             {
                 _graphSettings = result;
                 m_DataProcessingHelper.GraphSettings = _graphSettings;
+                m_CompareHelper.GraphSettings = _graphSettings;
             }
         }
 
@@ -379,6 +389,33 @@ namespace WarThunderParser
             }
         }
 
+        private void btn_Compare_Add_Click(object sender, RoutedEventArgs e)
+        {
+            var opened = Load();
+            if (opened == null)
+                return;
+
+            CompareSource source = new CompareSource(CompareHelper.DEFAULT_NAME, opened[0].Data.data, opened[0].Data.units);
+            m_CompareHelper.AddSource(source);
+        }
+
+        private void btn_Compare_Remove_Click(object sender, RoutedEventArgs e)
+        {
+            if (lb_Compare_Sources.SelectedItem == null)
+                return;
+            var selectedSource = (lb_Compare_Sources.SelectedItem as CheckedListItem<string>).Item;
+            m_CompareHelper.RemoveSource(selectedSource);
+        }
+
+        private void btn_Compare_ToMetrical_Click(object sender, RoutedEventArgs e)
+        {
+            m_CompareHelper.SetMetrica(Metrica.Metric);
+        }
+
+        private void btn_Compare_ToImperial_Click(object sender, RoutedEventArgs e)
+        {
+            m_CompareHelper.SetMetrica(Metrica.Imperial);
+        }
     }
         
 }
