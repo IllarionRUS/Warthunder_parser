@@ -166,7 +166,7 @@ namespace WarThunderParser.Utils
             }
             return null;
         }
-        public object[] OpenMultiple(Dictionary<string, Saver> extensions)
+        public Dictionary<string, object> OpenMultiple(Dictionary<string, Saver> extensions)
         {
             if (extensions.Count == 0)
             {
@@ -183,12 +183,13 @@ namespace WarThunderParser.Utils
             
             if (result == true)
             {
-                List<object> resultArray = new List<object>();
+                Dictionary<string, object> resultDictionary = new Dictionary<string, object>();
                 foreach (var fileName in dlg.FileNames)
                 {
-                    resultArray.Add(extensions[keys[dlg.FilterIndex - 1]].Open(fileName));
+                    string fn = Path.GetFileNameWithoutExtension(fileName);
+                    resultDictionary.Add(fn, extensions[keys[dlg.FilterIndex - 1]].Open(fileName));
                 }
-                return resultArray.ToArray();
+                return resultDictionary;
             }
             return null;
         }

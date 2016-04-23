@@ -236,13 +236,11 @@ namespace WarThunderParser.Core
 
         private void AddOrdinate(string ordinate)
         {
-            var ordinatesCount = m_Graphs.Count > 0
-                ? m_Graphs.First().Value.Count
-                : 0;
-            if (ordinatesCount == MAX_ORDINATES)
+            var ordinatesCount = m_AvailableOrdinates.Where(ao => ao.IsChecked).Count();
+            if (ordinatesCount > MAX_ORDINATES)
             {
                 m_AvailableOrdinates.Where(o => o.Item.Equals(ordinate)).First().IsChecked = false;
-                MessageBox.Show("only " + MAX_ORDINATES + " ordinates allowed");
+                MessageBox.Show(string.Format(Properties.Resources.compare_ordinats_limit_format, MAX_ORDINATES));
                 return;
             }
 
@@ -265,7 +263,7 @@ namespace WarThunderParser.Core
             GraphControl.GraphPane.CurveList.Clear();
             GraphPane pane = GraphControl.GraphPane;
             pane.YAxisList.Clear();
-
+            pane.Title.Text = "";
             //var graphs = m_Graphs.SelectMany(g => g.Value).ToList();
             if (m_Graphs.SelectMany(g => g.Value).Count() == 0)
             {
@@ -406,7 +404,7 @@ namespace WarThunderParser.Core
 
                     string title = newSource.Title;
                     while (m_Sources.Where(s => s.Title.Equals(newSource.Title)).Count() > 1)
-                        newSource.Title = title + titleNum++;
+                        newSource.Title = title + "(" + titleNum++ + ")";
 
                     newSource.getValues().Keys.ToList().ForEach(
                         k =>

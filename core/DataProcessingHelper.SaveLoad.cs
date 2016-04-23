@@ -30,21 +30,27 @@ namespace WarThunderParser.Core
         [Serializable]
         public sealed class SavedState
         {
+            [NonSerialized]
+            private string name;
+
             internal Dictionary<string, List<double>> data;
             internal Dictionary<string, string> units;
             internal DateTime? synchTyme;
             internal List<Graph> graphs;
-
+            
             internal SavedState(DataProcessingHelper parent)
             {
                 data = parent.m_Data;
                 units = parent.m_Units;
                 graphs = parent.Graphs;
+                name = string.IsNullOrEmpty(parent.m_Type)
+                    ? ((graphs != null && graphs.Count > 0) ? graphs.First().GraphName : "")
+                    : parent.m_Type;
             }
 
             internal string getName()
             {
-                return (graphs != null && graphs.Count > 0) ? graphs.First().GraphName : "";
+                return name;
             }
 
         }

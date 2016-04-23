@@ -53,6 +53,7 @@ namespace WarThunderParser.Core
 
         public DataProcessingHelper(FdrManager mngr)
         {
+            m_Type = "";
             RecordersManager = mngr;
 
             Graphs = new List<Graph>();
@@ -118,7 +119,8 @@ namespace WarThunderParser.Core
             Graphs.Clear();
             m_SynchTime = null;
             DataGrid.Columns.Clear();
-            DataGrid.ItemsSource = null;           
+            DataGrid.ItemsSource = null;
+            m_Type = "";
 
             if (GraphControl != null)
             {                

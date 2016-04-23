@@ -61,6 +61,9 @@ namespace WarThunderParser
         public FdrRecorderFailureEventArgs _failureArgs;
         private DispatcherTimer _failureTimer;
         
+        // One-time text params snapshot
+        public Dictionary<string, string> TextData { get; private set; }
+
         //Конструктор
         public FlightDataRecorder(string uri, bool isCritical, int delay)
         {
@@ -76,6 +79,8 @@ namespace WarThunderParser
             _failureTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(Delay), DispatcherPriority.Normal, failureTimerAction,
                 Dispatcher.CurrentDispatcher);
             _failureTimer.IsEnabled = false;
+
+            TextData = new Dictionary<string, string>();
         }
         public void Request()
         {
@@ -169,15 +174,25 @@ namespace WarThunderParser
                 name = matchValue.Replace("\"", "");
                 //ignore empty names (no matches with regex)
                 if (string.IsNullOrEmpty(name.Trim()))
-                    continue;
-                //Добавляем в словарь текущих значений параметр
-                curValues.Add(name, new[] {unit, textValue});
-                //При инициализации
-                if (_paramsDictionary[Consts.Value.Time].Value.Count == 0)
                 {
-                    var parsedParam = new ParsedParam {Value = new List<double>(), Unit = unit};
-                    _paramsDictionary.Add(name, parsedParam);
+                    // add text data
+                    string dividedBySpace = Regex.Replace(match.Value, "[\",:]", "");
+                    var split = dividedBySpace.Split(" ".ToCharArray());
+                    if (split.Length == 2 && !TextData.ContainsKey(split[0]))
+                        TextData.Add(split[0], split[1]);
                 }
+                else
+                {
+                    // add numeric data
+                    //Добавляем в словарь текущих значений параметр
+                    curValues.Add(name, new[] { unit, textValue });
+                    //При инициализации
+                    if (_paramsDictionary[Consts.Value.Time].Value.Count == 0)
+                    {
+                        var parsedParam = new ParsedParam { Value = new List<double>(), Unit = unit };
+                        _paramsDictionary.Add(name, parsedParam);
+                    }
+                }                
             }
             //Проверяем есть ли не совпадение в ключах общего и текущего словарей
             if (_paramsDictionary.Keys.SequenceEqual(curValues.Keys.ToArray()))
@@ -281,6 +296,7 @@ namespace WarThunderParser
         public void Clear()
         {
             _paramsDictionary.Clear();
+            TextData.Clear();
         }
     }
 }

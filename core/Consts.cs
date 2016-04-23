@@ -15,6 +15,7 @@ namespace WarThunderParser.Core
     {
         public static class Value
         {
+            public const string Type = "type";
             public const string Time = "Time";            
             public const string TAS = "TAS";
             public const string IAS = "IAS";

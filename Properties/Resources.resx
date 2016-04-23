@@ -274,7 +274,7 @@ Setting axis is available only after data was collected. To build graphs select 
     <value>Measures</value>
   </data>
   <data name="Title" xml:space="preserve">
-    <value>WTParser v1.1.1</value>
+    <value>WTParser v1.1.7</value>
   </data>
   <data name="dlg_GS_lbl_SmoothLevel" xml:space="preserve">
     <value>Level of smoothing, pixels:</value>
@@ -305,5 +305,11 @@ Setting axis is available only after data was collected. To build graphs select 
   </data>
   <data name="default_plot_title" xml:space="preserve">
     <value>Plot</value>
+  </data>
+  <data name="compare_ordinats_limit_format" xml:space="preserve">
+    <value>Only {0} Y-Axis allowed</value>
+  </data>
+  <data name="btn_Graph_Compare" xml:space="preserve">
+    <value>Add to comparsion</value>
   </data>
 </root>

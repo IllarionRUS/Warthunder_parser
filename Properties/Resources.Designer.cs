@@ -97,6 +97,15 @@ namespace WarThunderParser.Properties {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Add to comparsion.
+        /// </summary>
+        public static string btn_Graph_Compare {
+            get {
+                return ResourceManager.GetString("btn_Graph_Compare", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Help.
         /// </summary>
         public static string btn_Help {
@@ -183,6 +192,15 @@ namespace WarThunderParser.Properties {
         public static string common_error {
             get {
                 return ResourceManager.GetString("common_error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Only {0} Y-Axis allowed.
+        /// </summary>
+        public static string compare_ordinats_limit_format {
+            get {
+                return ResourceManager.GetString("compare_ordinats_limit_format", resourceCulture);
             }
         }
         
@@ -563,7 +581,7 @@ namespace WarThunderParser.Properties {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на WTParser v1.1.1.
+        ///   Ищет локализованную строку, похожую на WTParser v1.1.7.
         /// </summary>
         public static string Title {
             get {

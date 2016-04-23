@@ -80,8 +80,9 @@
                 </Grid.RowDefinitions>
                 <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Left" Background="Lavender">
                     <Button x:Name="btn_Graph_Prefs" Content="{x:Static res:Resources.btn_Preferences}" Margin="3,0,3,3" VerticalAlignment="Bottom" Click="btn_Graph_Prefs_Click" />
-                    <Button x:Name="btn_Graph_Save" Content="{x:Static res:Resources.btn_Save}" Margin="3" VerticalAlignment="Top" Click="btn_Graph_Save_Click"  />
-                    <Button x:Name="btn_Graph_Open" Content="{x:Static res:Resources.btn_Open}" Margin="3" VerticalAlignment="Top" Click="btn_Graph_Open_Click"    />
+                    <Button x:Name="btn_Graph_Save" Content="{x:Static res:Resources.btn_Save}" Margin="3" VerticalAlignment="Top" Click="btn_Graph_Save_Click" />
+                    <Button x:Name="btn_Graph_Open" Content="{x:Static res:Resources.btn_Open}" Margin="3" VerticalAlignment="Top" Click="btn_Graph_Open_Click" />
+                    <Button x:Name="btn_Graph_Compare" Content="{x:Static res:Resources.btn_Graph_Compare}" Margin="3" VerticalAlignment="Top" Click="btn_Graph_Compare_Click" />
                 </StackPanel>
 
                 <WindowsFormsHost Grid.Row="1" x:Name ="WinHost" Margin="207,0,0,0" >
@@ -141,11 +142,13 @@
                 <Label Content="{x:Static res:Resources.lbl_Compare_Sources}" HorizontalAlignment="Left" Grid.Row="1" VerticalAlignment="Top" />
                 <ListBox x:Name="lb_Compare_Sources" 
                          HorizontalAlignment="Left" VerticalAlignment="Top"
-                         Margin="0,23,0,0" Grid.Row="1" 
+                         Margin="0,23,0,0" Grid.Row="1"  
                          Width="202" Height="200">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <CheckBox IsChecked="{Binding IsChecked}" Content="{Binding Item}"/>
+                            <CheckBox IsChecked="{Binding IsChecked}" Content="{Binding Item}"                                                             
+                                Margin="0,0,15,0"
+                                />
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                     <ListBox.ItemContainerStyle>

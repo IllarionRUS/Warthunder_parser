@@ -8,6 +8,7 @@ namespace WarThunderParser.Core
 {
     public partial class DataProcessingHelper
     {
+        private string m_Type;
         private Dictionary<string, List<double>> m_Data = new Dictionary<string, List<double>>();
         private Dictionary<string, string> m_Units = new Dictionary<string, string>();
         private int m_DataSize;
@@ -66,6 +67,9 @@ namespace WarThunderParser.Core
                     m_Data.Add(name, approximated[Array.IndexOf(recorder.Names, name)]);
                     m_Units.Add(name, unit);  
                 }
+
+                if (recorder.TextData.ContainsKey(Consts.Value.Type))
+                    m_Type = recorder.TextData[Consts.Value.Type];
             }
             if (m_Data.Count == 0)
             {
@@ -169,6 +173,25 @@ namespace WarThunderParser.Core
             UpdateDataGrid();
             foreach (var columnName in visibleColumns)
                 ShowColumn(columnName);
+        }
+
+        public Dictionary<string, List<double>> getData()
+        {
+            if (m_Data == null)
+                return null;
+            return m_Data.ToDictionary(entry => entry.Key, entry => new List<double>(entry.Value));
+        }
+
+        public Dictionary<string, string> getUnits()
+        {
+            if (m_Units == null)
+                return null;
+            return m_Units.ToDictionary(entry => entry.Key, entry => entry.Value);
+        }
+
+        public string getType()
+        {
+            return m_Type;
         }
 
         /*
