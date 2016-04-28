@@ -89,6 +89,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="core\DataProcessingHelper.Measure.cs" />
     <Compile Include="utils\UnitConverter.cs" />
     <Page Include="CollectSettings.xaml">
       <SubType>Designer</SubType>
