@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Linq.Dynamic;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -15,6 +17,54 @@ namespace WarThunderParser
     {
         public string Unit { get; set; }
         public List<double> Value;
+    }
+
+    public struct Trigger
+    {
+        private string m_Value;
+        private string[] m_Variables;
+        private Delegate m_Predicate;
+
+        public string Value
+        {
+            set
+            {
+                m_Value = value;
+                m_Predicate = null;
+                if (!string.IsNullOrEmpty(value.Trim()))
+                    m_Variables = new Regex("[^a-zA-Z]").Replace(value, " ").Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                else
+                    m_Variables = null;
+            }
+        }
+        
+        public string [] Params
+        {
+            get
+            {
+                return m_Variables;
+            }
+        }
+
+        public Delegate Predicate
+        {
+            get
+            {
+                if (m_Predicate == null)
+                {                    
+                    if (m_Variables != null && m_Variables.Length > 0)
+                    {
+                        ParameterExpression[] expParams = new ParameterExpression[m_Variables.Length];
+                        for (int i = 0; i < m_Variables.Length; i++)
+                            expParams[i] = Expression.Parameter(typeof(double), m_Variables[i]);
+
+                        var result = System.Linq.Dynamic.DynamicExpression.ParseLambda(expParams, null, m_Value);
+                        m_Predicate = result.Compile();
+                    }
+                }
+                return m_Predicate;
+            }
+        }  
     }
 
     public class FlightDataRecorder
