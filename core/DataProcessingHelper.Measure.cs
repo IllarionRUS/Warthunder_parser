@@ -45,7 +45,36 @@ namespace WarThunderParser.Core
         {
             if (m_DataSize == 0)
                 return;
-            // todo
+            if (!m_Data.ContainsKey(Consts.Value.Compass) || m_Data[Consts.Value.Compass].Count < 2)
+                return;
+
+            var compass = m_Data[Consts.Value.Compass];
+
+            var turnsData = new List<List<KeyValuePair<double, double>>>(); // <turns<time, compass>>
+
+            double currentCompass = compass[0];
+            var nextTurnData = new List<KeyValuePair<double, double>>();
+            for (int i = 1; i < m_DataSize - 1; i++)
+            {
+                nextTurnData.Add(new KeyValuePair<double, double>(m_Data[Consts.Value.Time][i - 1], currentCompass));
+                if ((currentCompass > compass[i] && currentCompass < compass[i + 1]) // turn counter clock
+                        || (currentCompass > compass[i] && compass[i] < compass[i + 1])) // turn by clock
+                {
+                    turnsData.Add(nextTurnData);
+                    nextTurnData = new List<KeyValuePair<double, double>>();
+                }
+                currentCompass = compass[i];
+            }
+
+            int turnsCount = turnsData.Count;
+            if (turnsCount > 0)
+            {
+                var turnTime = new List<double>(m_DataSize);
+                for (int i = 1; i < turnsCount; i++)
+                {
+                    
+                }
+            }
         }
 
         private void CalcTurnRadius()
@@ -60,6 +89,16 @@ namespace WarThunderParser.Core
             if (m_DataSize == 0)
                 return;
             // todo
+        }
+
+        private long CalcTakeoffDistance()
+        {
+
+        }
+
+        private long CalcLandingDistance()
+        {
+
         }
 
     }
